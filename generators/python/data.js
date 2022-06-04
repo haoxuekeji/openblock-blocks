@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ goog.provide('Blockly.Python.data');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['data_variable'] = function(block) {
+Blockly.Python['data_variable'] = function (block) {
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-      Blockly.Variables.NAME_TYPE);
+    Blockly.Variables.NAME_TYPE);
   return [varName, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['data_setvariableto'] = function(block) {
+Blockly.Python['data_setvariableto'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
-      Blockly.Python.ORDER_ADDITIVE) || '0';
+    Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-      Blockly.Variables.NAME_TYPE);
+    Blockly.Variables.NAME_TYPE);
 
   // Arg is a number
   if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) {
@@ -42,11 +42,11 @@ Blockly.Python['data_setvariableto'] = function(block) {
   return varName + ' = ' + arg0 + '\n';
 };
 
-Blockly.Python['data_changevariableby'] = function(block) {
+Blockly.Python['data_changevariableby'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
-      Blockly.Python.ORDER_ADDITIVE) || '0';
+    Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-      Blockly.Variables.NAME_TYPE);
+    Blockly.Variables.NAME_TYPE);
 
   // Arg is a number
   if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) {
@@ -55,67 +55,67 @@ Blockly.Python['data_changevariableby'] = function(block) {
   return varName + ' += ' + arg0 + '\n';
 };
 
-Blockly.Python['data_showvariable'] = function() {
+Blockly.Python['data_showvariable'] = function () {
   return '';
 };
 
-Blockly.Python['data_hidevariable'] = function() {
+Blockly.Python['data_hidevariable'] = function () {
   return '';
 };
 
-Blockly.Python['data_listcontents'] = function() {
+Blockly.Python['data_listcontents'] = function () {
   return '';
 };
 
-Blockly.Python['data_listindexall'] = function() {
+Blockly.Python['data_listindexall'] = function () {
   return '';
 };
 
-Blockly.Python['data_listindexrandom'] = function() {
+Blockly.Python['data_listindexrandom'] = function () {
   return '';
 };
 
-Blockly.Python['data_addtolist'] = function() {
+Blockly.Python['data_addtolist'] = function () {
   return '';
 };
 
-Blockly.Python['data_deleteoflist'] = function() {
+Blockly.Python['data_deleteoflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_deletealloflist'] = function() {
+Blockly.Python['data_deletealloflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_insertatlist'] = function() {
+Blockly.Python['data_insertatlist'] = function () {
   return '';
 };
 
-Blockly.Python['data_replaceitemoflist'] = function() {
+Blockly.Python['data_replaceitemoflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_itemoflist'] = function() {
+Blockly.Python['data_itemoflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_itemnumoflist'] = function() {
+Blockly.Python['data_itemnumoflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_lengthoflist'] = function() {
+Blockly.Python['data_lengthoflist'] = function () {
   return '';
 };
 
-Blockly.Python['data_listcontainsitem'] = function() {
+Blockly.Python['data_listcontainsitem'] = function () {
   return '';
 };
 
-Blockly.Python['data_showlist'] = function() {
+Blockly.Python['data_showlist'] = function () {
   return '';
 };
 
-Blockly.Python['data_hidelist'] = function() {
+Blockly.Python['data_hidelist'] = function () {
   return '';
 };
 

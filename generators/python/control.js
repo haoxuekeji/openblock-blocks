@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ goog.provide('Blockly.Python.control');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['control_wait'] = function(block) {
+Blockly.Python['control_wait'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'DURATION',
-      Blockly.Python.ORDER_FUNCTION_CALL);
+    Blockly.Python.ORDER_FUNCTION_CALL);
   var code = "sleep(" + arg0 + " * 1000" + ")\n";
   return code;
 };
 
-Blockly.Python['control_repeat'] = function(block) {
+Blockly.Python['control_repeat'] = function (block) {
   var repeats = Blockly.Python.valueToCode(block, 'TIMES',
-      Blockly.Python.ORDER_FUNCTION_CALL);
+    Blockly.Python.ORDER_FUNCTION_CALL);
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
 
@@ -45,7 +45,7 @@ Blockly.Python['control_repeat'] = function(block) {
   return code;
 };
 
-Blockly.Python['control_forever'] = function(block) {
+Blockly.Python['control_forever'] = function (block) {
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
 
@@ -57,9 +57,9 @@ Blockly.Python['control_forever'] = function(block) {
   return code;
 };
 
-Blockly.Python['control_if'] = function(block) {
+Blockly.Python['control_if'] = function (block) {
   var argument = Blockly.Python.valueToCode(block, 'CONDITION',
-      Blockly.Python.ORDER_NONE) || 'False';
+    Blockly.Python.ORDER_NONE) || 'False';
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
 
@@ -72,9 +72,9 @@ Blockly.Python['control_if'] = function(block) {
   return code;
 };
 
-Blockly.Python['control_if_else'] = function(block) {
+Blockly.Python['control_if_else'] = function (block) {
   var argument = Blockly.Python.valueToCode(block, 'CONDITION',
-      Blockly.Python.ORDER_NONE) || 'False';
+    Blockly.Python.ORDER_NONE) || 'False';
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
   var branch2 = Blockly.Python.statementToCode(block, 'SUBSTACK2');
@@ -95,17 +95,17 @@ Blockly.Python['control_if_else'] = function(block) {
   return code;
 };
 
-Blockly.Python['control_wait_until'] = function(block) {
+Blockly.Python['control_wait_until'] = function (block) {
   var argument = Blockly.Python.valueToCode(block, 'CONDITION',
-      Blockly.Python.ORDER_UNARY_POSTFIX) || 'False';
+    Blockly.Python.ORDER_UNARY_POSTFIX) || 'False';
   var code = "while not " + argument + ":\n";
   code += Blockly.Python.INDENT + "repeat()\n";
   return code;
 };
 
-Blockly.Python['control_repeat_until'] = function(block) {
+Blockly.Python['control_repeat_until'] = function (block) {
   var argument = Blockly.Python.valueToCode(block, 'CONDITION',
-      Blockly.Python.ORDER_UNARY_POSTFIX) || 'False';
+    Blockly.Python.ORDER_UNARY_POSTFIX) || 'False';
 
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);

@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.procedures');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['procedures_definition'] = function(block) {
+Blockly.Python['procedures_definition'] = function (block) {
   var func = Blockly.Python.statementToCode(block, 'custom_block');
 
   // Delet first indent.
@@ -38,7 +38,7 @@ Blockly.Python['procedures_definition'] = function(block) {
   return null;
 };
 
-Blockly.Python['procedures_call'] = function(block) {
+Blockly.Python['procedures_call'] = function (block) {
   // Generators can not automatic handle indefinite parameters. We should get
   // block.inputList and handle
   var funcName = block.getProcCode();
@@ -67,12 +67,12 @@ Blockly.Python['procedures_call'] = function(block) {
   return code;
 };
 
-Blockly.Python['procedures_prototype'] = function(block) {
+Blockly.Python['procedures_prototype'] = function (block) {
   var funcName = block.getProcCode();
   var argName = block.displayNames_;
   var argCode = [];
 
-  funcName = funcName.replace(/ /g,'_');
+  funcName = funcName.replace(/ /g, '_');
   for (var i = 0; i < argName.length; i++) {
     var ch = funcName.charAt(funcName.indexOf('%') + 1);
     var safeArgName = Blockly.Python.variableDB_.getName(argName[i], Blockly.Procedures.NAME_TYPE);
@@ -97,19 +97,19 @@ Blockly.Python['procedures_prototype'] = function(block) {
   return code;
 };
 
-Blockly.Python['argument_reporter_boolean'] = function(block) {
+Blockly.Python['argument_reporter_boolean'] = function (block) {
   var argName = block.getFieldValue('VALUE');
   var safeArgName = Blockly.Python.customFunctionsArgName_[argName];
   return [safeArgName, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['argument_reporter_number'] = function(block) {
+Blockly.Python['argument_reporter_number'] = function (block) {
   var argName = block.getFieldValue('VALUE');
   var safeArgName = Blockly.Python.customFunctionsArgName_[argName];
   return [safeArgName, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['argument_reporter_string'] = function(block) {
+Blockly.Python['argument_reporter_string'] = function (block) {
   var argName = block.getFieldValue('VALUE');
   var safeArgName = Blockly.Python.customFunctionsArgName_[argName];
   return [safeArgName, Blockly.Python.ORDER_ATOMIC];

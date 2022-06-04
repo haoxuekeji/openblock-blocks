@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,26 +37,26 @@ Blockly.Python = new Blockly.Generator('Python');
  * @private
  */
 Blockly.Python.addReservedWords(
-    // import keyword
-    // print ','.join(keyword.kwlist)
-    // http://docs.python.org/reference/lexical_analysis.html#keywords
-    'and,as,assert,break,class,continue,def,del,elif,else,except,exec,' +
-    'finally,for,from,global,if,import,in,is,lambda,not,or,pass,print,raise,' +
-    'return,try,while,with,yield,' +
-    //http://docs.python.org/library/constants.html
-    'True,False,None,NotImplemented,Ellipsis,__debug__,quit,exit,copyright,' +
-    'license,credits,' +
-    // http://docs.python.org/library/functions.html
-    'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,' +
-    'isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,' +
-    'iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,' +
-    'raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,' +
-    'long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,' +
-    'reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,' +
-    'min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,' +
-    'coerce,dir,id,oct,sorted,intern,' +
-    // Used by code generator
-    'count'
+  // import keyword
+  // print ','.join(keyword.kwlist)
+  // http://docs.python.org/reference/lexical_analysis.html#keywords
+  'and,as,assert,break,class,continue,def,del,elif,else,except,exec,' +
+  'finally,for,from,global,if,import,in,is,lambda,not,or,pass,print,raise,' +
+  'return,try,while,with,yield,' +
+  //http://docs.python.org/library/constants.html
+  'True,False,None,NotImplemented,Ellipsis,__debug__,quit,exit,copyright,' +
+  'license,credits,' +
+  // http://docs.python.org/library/functions.html
+  'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,' +
+  'isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,' +
+  'iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,' +
+  'raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,' +
+  'long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,' +
+  'reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,' +
+  'min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,' +
+  'coerce,dir,id,oct,sorted,intern,' +
+  // Used by code generator
+  'count'
 );
 
 /**
@@ -96,7 +96,7 @@ Blockly.Python.firstLoop = true;
  * Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
-Blockly.Python.init = function(workspace) {
+Blockly.Python.init = function (workspace) {
   // Create a dictionary of imports to be printed at head.
   Blockly.Python.imports_ = Object.create(null);
   // Create a dictionary of custom founction definitions to be printed after imports.
@@ -137,7 +137,7 @@ Blockly.Python.init = function(workspace) {
  * @param {string} code Generated code.
  * @return {string} Completed code.
  */
-Blockly.Python.finish = function(code) {
+Blockly.Python.finish = function (code) {
   // Convert the imports dictionary into a list.
   var imports = [];
   for (var name in Blockly.Python.imports_) {
@@ -241,7 +241,7 @@ Blockly.Python.finish = function(code) {
  * @return {string} Python code with comments and subsequent blocks added.
  * @private
  */
-Blockly.Python.scrub_ = function(block, code) {
+Blockly.Python.scrub_ = function (block, code) {
   if ((code === null) || (!Blockly.Python.check_(block))) {
     // Block has handled code generation itself.
     return '';
@@ -300,7 +300,7 @@ Blockly.Python.scrub_ = function(block, code) {
  * @param {string} line Line of generated code.
  * @return {string} Legal line of code.
  */
-Blockly.Python.scrubNakedValue = function(line) {
+Blockly.Python.scrubNakedValue = function (line) {
   return line + ';\n';
 };
 
@@ -310,12 +310,12 @@ Blockly.Python.scrubNakedValue = function(line) {
  * @return {string} Python string.
  * @private
  */
-Blockly.Python.quote_ = function(string) {
+Blockly.Python.quote_ = function (string) {
   // Can't use goog.string.quote since % must also be escaped.
   string = string.replace(/\\/g, '\\\\')
-      .replace(/\n/g, '\\\n')
-      .replace(/%/g, '\\%')
-      .replace(/'/g, '\\\'');
+    .replace(/\n/g, '\\\n')
+    .replace(/%/g, '\\%')
+    .replace(/'/g, '\\\'');
   return '\'' + string + '\'';
 };
 
@@ -326,7 +326,7 @@ Blockly.Python.quote_ = function(string) {
  * @return {bool} Wether the block has effective connection.
  * @private
  */
-Blockly.Python.check_ = function(block) {
+Blockly.Python.check_ = function (block) {
   // If a block has no previousConnection means it is a hat block
   // or a string/nubmer block or a bool block.
 
@@ -335,7 +335,7 @@ Blockly.Python.check_ = function(block) {
   // round or sharp mean's it is not a program tree block. Skip it.
   if (block.getSurroundParent() === null) {
     if ((block.previousConnection !== null && block.getTopStackBlock().previousConnection !== null)
-    || block.getOutputShape() === 2 || block.getOutputShape() === 1
+      || block.getOutputShape() === 2 || block.getOutputShape() === 1
     ) {
       return false;
     }

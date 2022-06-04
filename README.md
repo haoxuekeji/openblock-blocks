@@ -1,5 +1,5 @@
-# openblock-blocks
-![](https://img.shields.io/travis/com/openblockcc/openblock-blocks) ![](https://img.shields.io/github/license/openblockcc/openblock-blocks)
+# hxblock-blocks
+![](https://img.shields.io/travis/com/openblockcc/hxblock-blocks) ![](https://img.shields.io/github/license/openblockcc/hxblock-blocks)
 
 ## Instructions
 

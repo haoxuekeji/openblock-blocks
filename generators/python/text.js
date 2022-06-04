@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.texts');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['text'] = function(block) {
+Blockly.Python['text'] = function (block) {
   // Text value.
   var code = Blockly.Python.quote_(block.getFieldValue('TEXT'));
   return [code, Blockly.Python.ORDER_ATOMIC];

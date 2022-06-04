@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2021 Arthur Zheng.
- * https://github.com/openblockcc/openblock-blocks
+ * https://github.com/openblockcc/hxblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.matrix');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['matrix'] = function(block) {
+Blockly.Python['matrix'] = function (block) {
   // Numeric value.
   var code = block.getFieldValue('MATRIX');
   if (isNaN(code)) {
