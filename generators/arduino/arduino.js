@@ -1,8 +1,8 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2020 Arthur Zheng.
- * https://github.com/zhengyangliu/scratch-blocks
+ * Copyright 2020 openblock.cc.
+ * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ Blockly.Arduino['arduino_pin_setServoOutput'] = function(block) {
 
   Blockly.Arduino.includes_['include_servo'] = '#include <Servo.h>';
   Blockly.Arduino.definitions_['definitions_servo' + arg0] = 'Servo servo_' + arg0 + ';';
-  Blockly.Arduino.setups_['setups_servo' + arg0] = 'servo_' + arg0 + '.attach' + '(' + arg0 + ');';
+  Blockly.Arduino.setups_['setups_servo' + arg0] = 'servo_' + arg0 + '.attach' + '(' + arg0 + ', 544, 2400);';
 
   var code = 'servo_' + arg0 + '.write' + '(' + arg1 + ');\n';
   return code;
@@ -81,7 +81,7 @@ Blockly.Arduino['arduino_pin_attachInterrupt'] = function(block) {
   branch = Blockly.Arduino.addLoopTrap(branch, block.id);
 
   Blockly.Arduino.definitions_['definitions_ISR_' + arg1 + arg0] =
-    'ISR_' + arg1 + '_' + arg0 + '() {\n' + branch + '}';
+    'void ISR_' + arg1 + '_' + arg0 + '() {\n' + branch + '}';
 
   var code = 'attachInterrupt(digitalPinToInterrupt(' + arg0 + '), ISR_' + arg1 + '_' + arg0 + ', ' + arg1 + ');\n';
   return code;
@@ -90,7 +90,7 @@ Blockly.Arduino['arduino_pin_attachInterrupt'] = function(block) {
 Blockly.Arduino['arduino_pin_detachInterrupt'] = function(block) {
   var arg0 = block.getFieldValue('PIN') || '2';
 
-  var code = 'detachInterrupt(digitalPinToInterrupt(' + arg0 + ');\n';
+  var code = 'detachInterrupt(digitalPinToInterrupt(' + arg0 + '));\n';
   return code;
 };
 
@@ -180,11 +180,6 @@ Blockly.Arduino['arduino_serial_multiSerialReadAByte'] = function(block) {
   return [code, Blockly.Arduino.ORDER_ATOMIC];
 };
 
-Blockly.Arduino['arduino_sensor_runningTime'] = function() {
-  var code = "millis()";
-  return [code, Blockly.Arduino.ORDER_ATOMIC];
-};
-
 Blockly.Arduino['arduino_data_dataMap'] = function(block) {
   var arg0 = Blockly.Arduino.valueToCode(block, 'DATA', Blockly.Arduino.ORDER_UNARY_POSTFIX) || 0;
   var arg1 = Blockly.Arduino.valueToCode(block, 'ARG0', Blockly.Arduino.ORDER_UNARY_POSTFIX) || 1;
@@ -240,4 +235,7 @@ Blockly.Arduino['arduino_data_dataConvertASCIINumber'] = function(block) {
   return [code, Blockly.Arduino.ORDER_ATOMIC];
 };
 
-
+Blockly.Arduino['arduino_system_getSystemTime'] = function() {
+  var code = 'millis()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};

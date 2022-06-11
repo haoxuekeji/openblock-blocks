@@ -1,7 +1,7 @@
 /**
- * Visual Blocks Language
+ * Visual Blocks Editor
  *
- * Copyright 2020 openblock.cc.
+ * Copyright 2021 openblock.cc.
  * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * @fileoverview Core JavaScript library for Blockly.
+ * @author arthurzheng@openblock.cc
+ */
 'use strict';
 
-goog.provide('Blockly.Arduino.texts');
+goog.provide('Blockly.ProgramMode');
 
-goog.require('Blockly.Arduino');
+/**
+ * @type {string}
+ * @protected
+ */
+Blockly.ProgramMode.programmode = 'realtime';
 
+/**
+ * Set current program mode.
+ * @param {string} mode - Current program mode.
+ */
+Blockly.ProgramMode.setProgramMode = function(mode) {
+  Blockly.ProgramMode.programmode = mode;
+};
 
-Blockly.Arduino['text'] = function(block) {
-  // Text value.
-  var code = Blockly.Arduino.quote_(block.getFieldValue('TEXT'));
-  return [code, Blockly.Arduino.ORDER_ATOMIC];
+/**
+ * Get current program mode.
+ * @return {string} Current program mode.
+ */
+Blockly.ProgramMode.getProgramMode = function() {
+  return Blockly.ProgramMode.programmode;
 };

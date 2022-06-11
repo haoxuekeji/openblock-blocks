@@ -791,6 +791,14 @@ Blockly.Css.CONTENT = [
     'fill: ' + Blockly.Colours.motion.secondary + ';',
   '}',
 
+  '.blocklyAngleDisableCircle {',
+    'stroke: #666;',
+    'stroke-width: 1;',
+    'fill: #666;',
+    'fill-opacity: .8;',
+    'stroke-opacity: .8;',
+  '}',
+
   '.blocklyAngleCenterPoint {',
     'stroke: #fff;',
     'stroke-width: 1;',
@@ -1032,10 +1040,11 @@ Blockly.Css.CONTENT = [
     'margin: 4px;',
     'padding: 0;',
     'width: 100%;',
+    '--trackColor: #000;',
   '}',
 
   '.scratchFieldSlider::-webkit-slider-runnable-track {',
-    'background: #ddd;',
+    'background: var(--trackColor);',
     'border-radius: 5px;',
     'height: 10px;',
   '}',

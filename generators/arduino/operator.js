@@ -1,8 +1,8 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2020 Arthur Zheng.
- * https://github.com/zhengyangliu/scratch-blocks
+ * Copyright 2020 openblock.cc.
+ * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,19 +63,27 @@ Blockly.Arduino['operator_compare'] = function(block) {
   var arg0 = Blockly.Arduino.valueToCode(block, 'OPERAND1', order);
   var arg1 = Blockly.Arduino.valueToCode(block, 'OPERAND2', order);
 
-  // Arg is a empty string
-  if (arg0 === "\"\"") {
-    arg0 = '0';
-  }
-  if (arg1 === "\"\"") {
-    arg1 = '0';
-  }
-  // Arg is a number
-  if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) {
+  if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) { // Arg is a number
     arg0 = parseFloat(arg0.slice(1, -1)).toString();
+  } else if (arg0 === "\"\"") { // Arg is a empty string
+    arg0 = '0';
+  } else if (arg0.charAt(0) === '"' && arg0.charAt(arg0.length - 1) === '"') {
+    if (arg0.length === 3) { // Arg is a single character
+      arg0 = arg0.replace(/"/g, '\'');
+    } else { // Arg is a string
+      arg0 = 'String(' + arg0 + ')';
+    }
   }
   if (parseFloat(arg1.slice(1, -1)) == arg1.slice(1, -1)) {
     arg1 = parseFloat(arg1.slice(1, -1)).toString();
+  } else if (arg1 === "\"\"") {
+    arg1 = '0';
+  } else if (arg1.charAt(0) === '"' && arg1.charAt(arg1.length - 1) === '"') {
+    if (arg1.length === 3) {
+      arg1 = arg1.replace(/"/g, '\'');
+    } else {
+      arg1 = 'String(' + arg1 + ')';
+    }
   }
 
   var op = oplist[block.type];
@@ -147,7 +155,7 @@ Blockly.Arduino['operator_contains'] = function(block) {
   var order = Blockly.Arduino.ORDER_UNARY_PREFIX;
   var arg0 = Blockly.Arduino.valueToCode(block, 'STRING1', order) || '\'\'';
   var arg1 = Blockly.Arduino.valueToCode(block, 'STRING2', order) || '0';
-  var code = 'String(' + arg0 + ').indexof(String(' + arg1 + '))';
+  var code = 'String(' + arg0 + ').indexOf(String(' + arg1 + '))';
   return [code, Blockly.Arduino.ORDER_NONE];
 };
 

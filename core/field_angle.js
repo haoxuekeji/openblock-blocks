@@ -36,6 +36,7 @@ goog.require('goog.userAgent');
  * Class for an editable angle field.
  * @param {(string|number)=} opt_value The initial content of the field. The
  *     value should cast to a number, and if it does not, '0' will be used.
+ * @param {(string|number)=} opt_max Maximum value.
  * @param {Function=} opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
@@ -43,7 +44,8 @@ goog.require('goog.userAgent');
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
-Blockly.FieldAngle = function(opt_value, opt_validator) {
+Blockly.FieldAngle = function(opt_value, opt_max, opt_validator) {
+  this.max_ = opt_max;
   // Add degree symbol: '360°' (LTR) or '°360' (RTL)
   this.symbol_ = Blockly.utils.createSvgElement('tspan', {}, null);
   this.symbol_.appendChild(document.createTextNode('\u00B0'));
@@ -65,7 +67,7 @@ goog.inherits(Blockly.FieldAngle, Blockly.FieldTextInput);
  * @nocollapse
  */
 Blockly.FieldAngle.fromJson = function(options) {
-  return new Blockly.FieldAngle(options['angle']);
+  return new Blockly.FieldAngle(options['angle'], options['max']);
 };
 
 /**
@@ -186,7 +188,24 @@ Blockly.FieldAngle.prototype.showEditor_ = function() {
   Blockly.utils.createSvgElement('circle', {
     'cx': Blockly.FieldAngle.HALF, 'cy': Blockly.FieldAngle.HALF,
     'r': Blockly.FieldAngle.RADIUS,
+    'stroke': this.sourceBlock_.parentBlock_.getColourTertiary(),
+    'fill': this.sourceBlock_.parentBlock_.getColourSecondary(),
     'class': 'blocklyAngleCircle'
+  }, svg);
+  var getSectorPath = function(x, y, outerDiameter, a1, a2) {
+    var degtorad = Math.PI / 180;
+    var cr = outerDiameter / 2;
+    var cx1 = Math.cos(degtorad * a2) * cr + x;
+    var cy1 = -Math.sin(degtorad * a2) * cr + y;
+    var cx2 = Math.cos(degtorad * a1) * cr + x;
+    var cy2 = -Math.sin(degtorad * a1) * cr + y;
+    return 'M' + x + ' ' + y + ' ' + cx1 + ' ' + cy1 + ' A' + cr + ' ' + cr + ' 0 0 1 ' + cx2 + ' ' + cy2 + 'Z';
+  };
+  // Draw the disabled sectors.
+  Blockly.utils.createSvgElement('path', {
+    'd': getSectorPath(Blockly.FieldAngle.HALF, Blockly.FieldAngle.HALF,
+        Blockly.FieldAngle.RADIUS * 2, 90, 90 - this.max_),
+    'class': 'blocklyAngleDisableCircle'
   }, svg);
   this.gauge_ = Blockly.utils.createSvgElement('path',
       {'class': 'blocklyAngleGauge'}, svg);
@@ -391,6 +410,9 @@ Blockly.FieldAngle.prototype.classValidator = function(text) {
   }
   if (n > Blockly.FieldAngle.WRAP) {
     n -= 360;
+  }
+  if (n > this.max_) {
+    n = this.max_;
   }
   return String(n);
 };

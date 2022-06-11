@@ -18,15 +18,20 @@
  */
 'use strict';
 
-goog.provide('Blockly.Arduino.event');
+goog.provide('Blockly.Arduino.esp8266');
 
 goog.require('Blockly.Arduino');
 
+Blockly.Arduino['arduino_pin_esp8266AttachInterrupt'] = function(block) {
+  var arg0 = block.getFieldValue('PIN') || '2';
+  var arg1 = block.getFieldValue('MODE') || 'RISING';
 
-Blockly.Arduino['event_whenarduinobegin'] = function() {
-  Blockly.Arduino.includes_["arduino"] = "#include <Arduino.h>";
+  var branch = Blockly.Arduino.statementToCode(block, 'SUBSTACK');
+  branch = Blockly.Arduino.addLoopTrap(branch, block.id);
 
-  var code = "";
+  Blockly.Arduino.definitions_['definitions_ISR_' + arg1 + arg0] =
+    'void IRAM_ATTR ISR_' + arg1 + '_' + arg0 + '() {\n' + branch + '}';
+
+  var code = 'attachInterrupt(digitalPinToInterrupt(' + arg0 + '), ISR_' + arg1 + '_' + arg0 + ', ' + arg1 + ');\n';
   return code;
 };
-

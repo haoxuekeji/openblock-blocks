@@ -30,6 +30,8 @@
  **/
 goog.provide('Blockly');
 
+goog.require('Blockly.Device');
+goog.require('Blockly.ProgramMode');
 goog.require('Blockly.BlockSvg.render');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');

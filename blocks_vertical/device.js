@@ -2,7 +2,7 @@
  * @license
  * Visual Blocks Editor
  *
- * Copyright 2020 Arthur Zheng.
+ * Copyright 2020 openblock.cc.
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,24 @@ Blockly.Blocks['event_whenarduinobegin'] = {
     this.jsonInit({
       "id": "event_whenarduinobegin",
       "message0": Blockly.Msg.EVENT_WHENARDUINOBEGIN,
+      "nextStatement": null,
+      "category": Blockly.Categories.event,
+      "colour": Blockly.Colours.event.primary,
+      "colourSecondary": Blockly.Colours.event.secondary,
+      "colourTertiary": Blockly.Colours.event.tertiary
+    });
+  }
+};
+
+Blockly.Blocks['event_whenmicropythonbegin'] = {
+  /**
+   * Block for when arduino begin.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.jsonInit({
+      "id": "event_whenmicropythonbegin",
+      "message0": Blockly.Msg.EVENT_WHENMICROPYTHONBEGIN,
       "nextStatement": null,
       "category": Blockly.Categories.event,
       "colour": Blockly.Colours.event.primary,

@@ -97,6 +97,7 @@ Blockly.FieldSlider.prototype.showEditor_ = function() {
   sliderInput.setAttribute('step', this.precision_);
   sliderInput.setAttribute('value', this.getValue());
   sliderInput.className = 'scratchFieldSlider';
+  sliderInput.style.setProperty('--trackColor', this.sourceBlock_.parentBlock_.getColourTertiary());
   editor.appendChild(sliderInput);
   this.sliderInput_ = sliderInput;
 

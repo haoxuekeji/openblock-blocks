@@ -53,10 +53,11 @@ function test_fieldnumber_constructor() {
     /* min */ -128,
     /* max */ 127,
     /* precision */ 1);
-  // Unlike blockly, scratch-blocks doesn't store min, max, and precision.
+  // Unlike blockly and scratch-blocks, openblock-blocks doesn't store recision,
+  // but store min and max
   assertEquals(field.getValue(), '0');
-  assertEquals(field.min_, undefined);
-  assertEquals(field.max_, undefined);
+  assertEquals(field.min_, -128);
+  assertEquals(field.max_, 127);
   assertEquals(field.precision_, undefined);
 
   // Bad value defaults to '0'

@@ -2,7 +2,7 @@
  * @license
  * Visual Blocks Editor
  *
- * Copyright 2020 Arthur Zheng.
+ * Copyright 2020 openblock.cc.
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,18 +55,19 @@ Blockly.Blocks['math_uint8_number'] = {
       message0: "%1",
       args0: [
         {
-          type: "field_slider",
-          name: "NUM",
-          value: "0",
-          min: "0",
-          max: "255"
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "precision": 1,
+          "min": "0",
+          "max": "255"
         }
       ],
-      output: "Number",
-      outputShape: Blockly.OUTPUT_SHAPE_ROUND,
-      colour: Blockly.Colours.textField,
-      colourSecondary: Blockly.Colours.textField,
-      colourTertiary: Blockly.Colours.textField
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
     });
   }
 };
@@ -74,21 +75,22 @@ Blockly.Blocks['math_uint8_number'] = {
 Blockly.Blocks['math_int9_number'] = {
   init: function() {
     this.jsonInit({
-      message0: "%1",
-      args0: [
+      "message0": "%1",
+      "args0": [
         {
-          type: "field_slider",
-          name: "NUM",
-          value: "0",
-          min: "-255",
-          max: "255"
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "precision": 1,
+          "min": "-255",
+          "max": "255"
         }
       ],
-      output: "Number",
-      outputShape: Blockly.OUTPUT_SHAPE_ROUND,
-      colour: Blockly.Colours.textField,
-      colourSecondary: Blockly.Colours.textField,
-      colourTertiary: Blockly.Colours.textField
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
     });
   }
 };
@@ -138,3 +140,47 @@ Blockly.Blocks['math_int11_number'] = {
     });
   }
 };
+
+Blockly.Blocks['math_0to100_number'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "min": "0",
+          "max": "100"
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+
+Blockly.Blocks['math_half_angle'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_angle",
+          "name": "NUM",
+          "value": 90,
+          "max": 180
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+

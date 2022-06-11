@@ -1,8 +1,8 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2020 Arthur Zheng.
- * https://github.com/zhengyangliu/scratch-blocks
+ * Copyright 2020 openblock.cc.
+ * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,4 +46,6 @@ Blockly.Arduino['math_uint8_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_int9_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_uint10_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_int11_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_0to100_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_half_angle'] = Blockly.Arduino['math_number'];
 

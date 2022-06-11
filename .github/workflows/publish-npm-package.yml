@@ -1,0 +1,137 @@
+name: Publish Npm Package
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - '.github/*'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - run: npm ci
+
+      - name: Set test env
+        run: |
+          export DISPLAY=:99.0
+          tests/scripts/setup_linux_env.sh
+          sleep 2
+
+      - run: npm test
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+
+      - run: npm ci
+
+      - name: Update openblock-l10n
+        run: npm i --save openblock-l10n@latest
+
+      # Don't push translations to TX, just pull, The push step will be run by the enterprise edition repository.
+      # - name: Sync translations
+      #   run: |
+      #     export TX_TOKEN=${{ secrets.TX_TOKEN }}
+      #     npm run translate
+      #     npm run translate:update
+      - name: Pull translations
+        run: |
+          export TX_TOKEN=${{ secrets.TX_TOKEN }}
+          npm run translate
+          npm run translate:sync:translations
+
+      - name: Set test env
+        run: |
+          export DISPLAY=:99.0
+          tests/scripts/setup_linux_env.sh
+          sleep 2
+
+      - run: npm test
+
+      - name: Check for modified files
+        id: git-check
+        # Check if there are any files update, but ignore the case where only package-lock.json is updated.
+        run: |
+          echo ::set-output name=modified::$(if [ -n "$(git status --porcelain)" ] && [ "$(git status --porcelain)" != " M package-lock.json" ]; then echo "true"; else echo "false"; fi)
+
+      - name: Commit translations
+        if: ${{ steps.git-check.outputs.modified == 'true' }}
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+          git add .
+          git commit -m '[skip ci] Update translations from transifex'
+          git remote add origin-translation https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git push --set-upstream origin-translation main
+
+      - name: Get package main version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.1.0
+
+      - name: Generate release version
+        run: |
+          echo "RELEASE_VERSION=${{ steps.package-version.outputs.current-version }}-prerelease.$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Set package version
+        run: npm --no-git-tag-version version $RELEASE_VERSION
+
+      - name: Tag release
+        run: |
+          git tag $RELEASE_VERSION
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$GITHUB_REPOSITORY $RELEASE_VERSION
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+

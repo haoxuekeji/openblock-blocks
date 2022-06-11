@@ -29,9 +29,20 @@ Blockly.Python['procedures_definition'] = function (block) {
   // Delet first indent.
   func = func.slice(2);
   var code = func + ':\n';
-  code = Blockly.Python.scrub_(block, code);
-  if (code === "code") {
-    code = "pass\n";
+
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (!nextBlock) {
+    code += Blockly.Python.INDENT + "pass\n";
+  } else {
+    var variablesName = [];
+    for (var x in Blockly.Python.variables_) {
+      variablesName.push(Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+    }
+    if (variablesName.length !== 0) {
+      code += Blockly.Python.INDENT + "global " + variablesName.join(', ') + "\n";
+    }
+
+    code = Blockly.Python.scrub_(block, code);
   }
 
   Blockly.Python.customFunctions_[func] = code;

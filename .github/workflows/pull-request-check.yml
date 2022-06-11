@@ -1,0 +1,36 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+
+      - name: Set test env
+        run: |
+          export DISPLAY=:99.0
+          tests/scripts/setup_linux_env.sh
+          sleep 2
+
+      - run: npm ci
+
+      - run: npm test

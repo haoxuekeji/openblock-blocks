@@ -153,6 +153,12 @@ Blockly.Flyout = function(workspaceOptions) {
    */
   this.recycleBlocks_ = [];
 
+  /**
+   * A list of deivce type.
+   * @type {!Array.<string>}
+   * @private
+   */
+  this.deviceTypeList_ = ['microbit','arduino'];
 };
 
 /**
@@ -523,6 +529,15 @@ Blockly.Flyout.prototype.show = function(xmlList) {
           return block.id === id;
         });
 
+        // Prevent blocks of device being recycled.
+        // If the type of block starts with these device types, means it is a deivce
+        // block which is comming from vm. Because many device blocks in vm have the same
+        // name of block type, but their drop-down menu content is different, if these
+        // blocks are recycled, the content of these block drop-down menus will not be
+        // updated when different devices are selected.
+        if (this.deviceTypeList_.includes(xml.getAttribute('type').split("_")[0])) {
+          recycled = -1;
+        }
 
         // If we found a recycled item, reuse the BlockSVG from last time.
         // Otherwise, convert the XML block to a BlockSVG.

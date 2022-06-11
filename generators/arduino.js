@@ -1,8 +1,8 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2020 Arthur Zheng.
- * https://github.com/zhengyangliu/scratch-blocks
+ * Copyright 2020 openblock.cc.
+ * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,9 +138,9 @@ Blockly.Arduino.init = function(workspace) {
   var defvars = [];
   var variables = Blockly.Variables.allVariables(workspace);
   for (var x = 0; x < variables.length; x++) {
-    defvars[x] = 'float ' +
-      Blockly.Arduino.variableDB_.getName(variables[x].name,
-          Blockly.Variables.NAME_TYPE) + ';';
+    if (variables[x].type !== Blockly.LIST_VARIABLE_TYPE) {
+      defvars[x] = 'float ' + Blockly.Arduino.variableDB_.getName(variables[x].name, Blockly.Variables.NAME_TYPE) + ';';
+    }
   }
   if (variables.length > 0) {
     Blockly.Arduino.definitions_['variables'] = defvars.join('\n');
@@ -190,7 +190,7 @@ Blockly.Arduino.finish = function(code) {
   }
   // custom function definitions
   if (customFunctions.length != 0) {
-    ret += customFunctions.join('\n\n') + "\n\n";
+    ret += customFunctions.join('\n') + "\n";
   }
 
   // setup()
@@ -272,10 +272,9 @@ Blockly.Arduino.scrub_ = function(block, code) {
   }
 
   var codeWithIndent = code;
-  // At this step if block is not surround by a parent and it is not empty and it's not
-  // a control_forever block. mean's it is in setup() function or it is custom function,
-  // add indent at start of every line.
-  if (block.getSurroundParent() === null && code !== "" && block.type !== 'control_forever') {
+  // Add indent at start of every line for the code in setup() function or custom function.
+  if (block.getSurroundParent() === null && code !== ""
+    && (block.type !== 'control_forever' || block.getRootBlock().type !== 'event_whenarduinobegin')) {
     // Add indent at start except custom function
     if (block.type !== 'procedures_definition'
       && block.type !== 'procedures_prototype') {

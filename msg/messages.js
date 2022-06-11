@@ -78,6 +78,7 @@ Blockly.Msg.DATA_INDEX_RANDOM = 'random';
 
 // Event blocks
 Blockly.Msg.EVENT_WHENARDUINOBEGIN = 'when Arduino begin';
+Blockly.Msg.EVENT_WHENMICROPYTHONBEGIN = 'when MicroPython begin';
 Blockly.Msg.EVENT_WHENMICROBITBEGIN = 'when Microbit begin';
 Blockly.Msg.EVENT_WHENMICROBITBUTTONPRESSED = 'when button %1 pressed';
 Blockly.Msg.EVENT_WHENMICROBITPINBEINGTOUCHED = 'when pin %1 being touched';

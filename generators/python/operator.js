@@ -62,19 +62,15 @@ Blockly.Python['operator_compare'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'OPERAND1', order);
   var arg1 = Blockly.Python.valueToCode(block, 'OPERAND2', order);
 
-  // Arg is a empty string
-  if (arg0 === "''") {
-    arg0 = '0';
-  }
-  if (arg1 === "''") {
-    arg1 = '0';
-  }
-  // Arg is a number
-  if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) {
+  if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) { // Arg is a number
     arg0 = parseFloat(arg0.slice(1, -1)).toString();
+  } else if (arg0 === "''") { // Arg is a empty string
+    arg0 = '0';
   }
   if (parseFloat(arg1.slice(1, -1)) == arg1.slice(1, -1)) {
     arg1 = parseFloat(arg1.slice(1, -1)).toString();
+  } else if (arg1 === "''") {
+    arg1 = '0';
   }
 
   var op = oplist[block.type];
