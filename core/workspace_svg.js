@@ -999,26 +999,33 @@ Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
 /**
  * Paste the provided block onto the workspace.
  * @param {!Element} xmlBlock XML block element.
+ * @param {!Event} e Mouse event or touch event
  */
-Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
+Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock, e) {
   if (!this.rendered) {
     return;
   }
   if (this.currentGesture_) {
     this.currentGesture_.cancel();  // Dragging while pasting?  No.
   }
+  if (xmlBlock.tagName == 'html') { // Not a valid blocks data
+    console.warn('Ignore invalid data: ', xmlBlock);
+    return;
+  }
   if (xmlBlock.tagName.toLowerCase() == 'comment') {
-    this.pasteWorkspaceComment_(xmlBlock);
-  } else {
-    this.pasteBlock_(xmlBlock);
+    this.pasteWorkspaceComment_(xmlBlock, e);
+  }else {
+    this.pasteBlock_(xmlBlock, e);
   }
 };
 
 /**
  * Paste the provided block onto the workspace.
  * @param {!Element} xmlBlock XML block element.
+ * @param {!Event} e Mouse event or touch event
  */
-Blockly.WorkspaceSvg.prototype.pasteBlock_ = function(xmlBlock) {
+Blockly.WorkspaceSvg.prototype.pasteBlock_ = function(xmlBlock, e) {
+  var isMouseEvent = Blockly.Touch.getTouchIdentifierFromEvent(e) === 'mouse';
   Blockly.Events.disable();
   try {
     var block = Blockly.Xml.domToBlock(xmlBlock, this);
@@ -1066,6 +1073,34 @@ Blockly.WorkspaceSvg.prototype.pasteBlock_ = function(xmlBlock) {
         }
       } while (collide);
       block.moveBy(blockX, blockY);
+    } else {
+      if (isMouseEvent) {
+        var injectionDiv = this.getInjectionDiv();
+        // Bounding rect coordinates are in client coordinates, meaning that they
+        // are in pixels relative to the upper left corner of the visible browser
+        // window.  These coordinates change when you scroll the browser window.
+        var boundingRect = injectionDiv.getBoundingClientRect();
+
+        // The client coordinates offset by the injection div's upper left corner.
+        var clientOffsetPixels = new goog.math.Coordinate(
+            e.clientX - boundingRect.left, e.clientY - boundingRect.top);
+
+        // The offset in pixels between the main workspace's origin and the upper
+        // left corner of the injection div.
+        var mainOffsetPixels = this.getOriginOffsetInPixels();
+
+        // The position of the new comment in pixels relative to the origin of the
+        // main workspace.
+        var finalOffsetPixels = goog.math.Coordinate.difference(clientOffsetPixels,
+            mainOffsetPixels);
+
+        // The position of the new comment in main workspace coordinates.
+        var finalOffsetMainWs = finalOffsetPixels.scale(1 / this.scale);
+
+        blockX = finalOffsetMainWs.x;
+        blockY = finalOffsetMainWs.y;
+        block.moveBy(blockX, blockY);
+      }
     }
   } finally {
     Blockly.Events.enable();
@@ -1073,7 +1108,25 @@ Blockly.WorkspaceSvg.prototype.pasteBlock_ = function(xmlBlock) {
   if (Blockly.Events.isEnabled() && !block.isShadow()) {
     Blockly.Events.fire(new Blockly.Events.BlockCreate(block));
   }
-  block.select();
+
+  if (isMouseEvent) {
+    // e is not a real mouseEvent/touchEvent/pointerEvent.  It's an event
+    // created by the context menu and has the coordinates of the mouse
+    // click that opened the context menu.
+    var fakeEvent = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      type: 'mousedown',
+      preventDefault: function() {
+        e.preventDefault();
+      },
+      stopPropagation: function() {
+        e.stopPropagation();
+      },
+      target: e.target
+    };
+    this.startDragWithFakeEvent(fakeEvent, block);
+  }
 };
 
 /**
@@ -1429,6 +1482,9 @@ Blockly.WorkspaceSvg.prototype.showContextMenu_ = function(e) {
   var topBlocks = this.getTopBlocks(true);
   var eventGroup = Blockly.utils.genUid();
   var ws = this;
+
+  // Option to paste blocks.
+  menuOptions.push(Blockly.ContextMenu.wsPasteOption(this, e));
 
   // Options to undo/redo previous action.
   menuOptions.push(Blockly.ContextMenu.wsUndoOption(this));

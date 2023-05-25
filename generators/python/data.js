@@ -33,7 +33,10 @@ Blockly.Python['data_setvariableto'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
     Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-    Blockly.Variables.NAME_TYPE);
+      Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   // Arg is a number
   if (parseFloat(arg0.slice(1, -1)) == arg0.slice(1, -1)) {
@@ -46,7 +49,10 @@ Blockly.Python['data_changevariableby'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
     Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-    Blockly.Variables.NAME_TYPE);
+      Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return varName + ' += ' + arg0 + '\n';
 };
@@ -70,6 +76,9 @@ Blockly.Python['data_addtolist'] = function(block) {
       Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('LIST'),
       Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return varName + '.append(' + item + ')\n';
 };
@@ -79,6 +88,9 @@ Blockly.Python['data_deleteoflist'] = function(block) {
       Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('LIST'),
       Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return 'del ' + varName + '[' + index + ' - 1]\n';
 };
@@ -86,6 +98,9 @@ Blockly.Python['data_deleteoflist'] = function(block) {
 Blockly.Python['data_deletealloflist'] = function(block) {
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('LIST'),
       Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return 'del ' + varName + '[0:]\n';
 };
@@ -97,6 +112,9 @@ Blockly.Python['data_insertatlist'] = function(block) {
       Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('LIST'),
       Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return varName + '.insert(' + index + ' - 1, ' + item + ')\n';
 };
@@ -108,6 +126,9 @@ Blockly.Python['data_replaceitemoflist'] = function(block) {
       Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('LIST'),
       Blockly.Variables.NAME_TYPE);
+  if (varName === 'unnamed') {
+    return '';
+  }
 
   return varName + '[' + index + ' - 1] = ' + item + '\n';
 };

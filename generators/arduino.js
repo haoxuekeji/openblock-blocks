@@ -138,7 +138,11 @@ Blockly.Arduino.init = function(workspace) {
   var defvars = [];
   var variables = Blockly.Variables.allVariables(workspace);
   for (var x = 0; x < variables.length; x++) {
-    if (variables[x].type !== Blockly.LIST_VARIABLE_TYPE) {
+    if (variables[x].type === Blockly.LIST_VARIABLE_TYPE) {
+      Blockly.Arduino.includes_["simplelist"] = "#include <SimpleList.h>";
+      defvars[x] = 'SimpleList<String> ' +
+        Blockly.Arduino.variableDB_.getName(variables[x].name, Blockly.Variables.NAME_TYPE) + ';';
+    } else {
       defvars[x] = 'float ' + Blockly.Arduino.variableDB_.getName(variables[x].name, Blockly.Variables.NAME_TYPE) + ';';
     }
   }
@@ -314,6 +318,7 @@ Blockly.Arduino.quote_ = function(string) {
   string = string.replace(/\\/g, '\\\\')
       .replace(/\n/g, '\\\n')
       .replace(/\$/g, '\\$')
+      .replace(/"/g, '\\"')
       .replace(/'/g, '\\\'');
   return '"' + string + '"';
 };

@@ -244,3 +244,23 @@ Blockly.scratchBlocksUtils.duplicateAndDragCallback = function(oldBlock, event) 
     }, 0);
   };
 };
+
+/**
+ * Creates a callback function for a click on the "copy" context menu
+ * option in Scratch Blocks.  The xml text of the block will be written
+ * to the clipboard.
+ * @param {!Blockly.BlockSvg} block The block that will be copy.
+ * @return {Function} A callback function that duplicates the block and starts a
+ *     drag.
+ * @package
+ */
+Blockly.scratchBlocksUtils.copyCallback = function(block) {
+  return function() {
+    // Give the context menu a chance to close.
+    setTimeout(function() {
+      var xml = Blockly.Xml.blockToDom(block);
+      var blockText = Blockly.Xml.domToText(xml);
+      navigator.clipboard.writeText(blockText);
+    }, 0);
+  };
+};

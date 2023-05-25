@@ -272,6 +272,22 @@ Blockly.ContextMenu.blockDuplicateOption = function(block, event) {
 };
 
 /**
+ * Make a context menu option for copy the current block.
+ * @param {!Blockly.BlockSvg} block The block where the right-click originated.
+ * @return {!Object} A menu option, containing text, enabled, and a callback.
+ * @package
+ */
+Blockly.ContextMenu.blockCopyOption = function(block) {
+  var copyOption = {
+    text: Blockly.Msg.COPY,
+    enabled: true,
+    callback:
+        Blockly.scratchBlocksUtils.copyCallback(block)
+  };
+  return copyOption;
+};
+
+/**
  * Make a context menu option for adding or removing comments on the current
  * block.
  * @param {!Blockly.BlockSvg} block The block where the right-click originated.
@@ -297,6 +313,26 @@ Blockly.ContextMenu.blockCommentOption = function(block) {
     };
   }
   return commentOption;
+};
+
+/**
+ * Make a context menu option for paste action on the workspace.
+ * @param {!Blockly.WorkspaceSvg} ws The workspace where the right-click
+ *     originated.
+ * @param {!Event} event Event that caused the context menu to open.
+ * @return {!Object} A menu option, containing text, enabled, and a callback.
+ * @package
+ */
+Blockly.ContextMenu.wsPasteOption = function(ws, event) {
+  return {
+    text: Blockly.Msg.PASTE,
+    enabled: true,
+    callback: function(){
+      navigator.clipboard.readText().then(function(text) {
+        ws.paste.bind(ws, Blockly.Xml.textToDom(text), event)();
+      });
+    }
+  };
 };
 
 /**

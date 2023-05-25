@@ -43,7 +43,9 @@ Blockly.Blocks['matrix'] = {
       "args0": [
         {
           "type": "field_matrix",
-          "name": "MATRIX"
+          "name": "MATRIX",
+          "width": 5,
+          "height": 5
         }
       ],
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,

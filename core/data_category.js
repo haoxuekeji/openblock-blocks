@@ -31,6 +31,7 @@
 goog.provide('Blockly.DataCategory');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.ProgramMode');
 goog.require('Blockly.VariableModel');
 goog.require('Blockly.Variables');
 goog.require('Blockly.Workspace');
@@ -57,8 +58,11 @@ Blockly.DataCategory = function(workspace) {
 
     Blockly.DataCategory.addSetVariableTo(xmlList, firstVariable);
     Blockly.DataCategory.addChangeVariableBy(xmlList, firstVariable);
-    Blockly.DataCategory.addShowVariable(xmlList, firstVariable);
-    Blockly.DataCategory.addHideVariable(xmlList, firstVariable);
+    // Don't show these unspported veriable blocks in upload mode.
+    if (Blockly.ProgramMode.getProgramMode() !== Blockly.ProgramMode.UPLOAD) {
+      Blockly.DataCategory.addShowVariable(xmlList, firstVariable);
+      Blockly.DataCategory.addHideVariable(xmlList, firstVariable);
+    }
   }
 
   // Now add list variables to the flyout
@@ -85,8 +89,11 @@ Blockly.DataCategory = function(workspace) {
     Blockly.DataCategory.addLengthOfList(xmlList, firstVariable);
     Blockly.DataCategory.addListContainsItem(xmlList, firstVariable);
     Blockly.DataCategory.addSep(xmlList);
-    Blockly.DataCategory.addShowList(xmlList, firstVariable);
-    Blockly.DataCategory.addHideList(xmlList, firstVariable);
+    // Don't show these unspported veriable blocks in upload mode.
+    if (Blockly.ProgramMode.getProgramMode() !== Blockly.ProgramMode.UPLOAD) {
+      Blockly.DataCategory.addShowList(xmlList, firstVariable);
+      Blockly.DataCategory.addHideList(xmlList, firstVariable);
+    }
   }
 
   return xmlList;

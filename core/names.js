@@ -122,7 +122,12 @@ Blockly.Names.prototype.getName = function(name, type) {
       name = varName;
     }
   }
-  var normalized = name.toLowerCase() + '_' + type;
+  var normalized;
+  if (name) {
+    normalized = name.toLowerCase() + '_' + type;
+  } else {
+    normalized = 'null' + '_' + type;
+  }
 
   var isVarType = type == Blockly.Variables.NAME_TYPE ||
       type == Blockly.Names.DEVELOPER_VARIABLE_TYPE;

@@ -305,6 +305,8 @@ Blockly.Msg.CATEGORY_VARIABLES = 'Variables';
 Blockly.Msg.CATEGORY_MYBLOCKS = 'My Blocks';
 
 // Context menus
+Blockly.Msg.COPY = 'Copy';
+Blockly.Msg.PASTE = 'Paste';
 Blockly.Msg.DUPLICATE = 'Duplicate';
 Blockly.Msg.DELETE = 'Delete';
 Blockly.Msg.ADD_COMMENT = 'Add Comment';
