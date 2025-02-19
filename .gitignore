@@ -24,6 +24,9 @@ python_compressed.js
 # Editor
 .vscode
 
+# Chromedriver
+LICENSE.chromedriver
+
 /accessible/*
 /dist
 /msg/js/*

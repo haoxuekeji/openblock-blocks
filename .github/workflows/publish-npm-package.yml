@@ -9,10 +9,10 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
 
@@ -22,9 +22,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '2.x'
+      - name: Set up Python 2.7
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python2.7 python2.7-dev python2-pip-whl
+          sudo ln -sf python2.7 /usr/bin/python
+          export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
+          sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
+          sudo chown -R $USER /usr/local/lib/python2.7
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -42,6 +48,9 @@ jobs:
 
       - name: Set test env
         run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+          npm install --save-dev chromedriver@$CHROME_MAJOR_VERSION
           export DISPLAY=:99.0
           tests/scripts/setup_linux_env.sh
           sleep 2
@@ -50,7 +59,7 @@ jobs:
 
   publish:
     needs: check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
@@ -70,16 +79,22 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '2.x'
+      - name: Set up Python 2.7
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python2.7 python2.7-dev python2-pip-whl
+          sudo ln -sf python2.7 /usr/bin/python
+          export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
+          sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
+          sudo chown -R $USER /usr/local/lib/python2.7
 
       - run: npm ci
 
       - name: Update openblock-l10n
         run: npm i --save openblock-l10n@latest
 
-      # Don't push translations to TX, just pull, The push step will be run by the enterprise edition repository.
+      # Don't push translations to TX, just pull, The push step will be run by the distro repository.
       # - name: Sync translations
       #   run: |
       #     export TX_TOKEN=${{ secrets.TX_TOKEN }}
@@ -93,6 +108,9 @@ jobs:
 
       - name: Set test env
         run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+          npm install --save-dev chromedriver@$CHROME_MAJOR_VERSION
           export DISPLAY=:99.0
           tests/scripts/setup_linux_env.sh
           sleep 2
@@ -130,6 +148,15 @@ jobs:
         run: |
           git tag $RELEASE_VERSION
           git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$GITHUB_REPOSITORY $RELEASE_VERSION
+
+      - name: Deploy with gh-pages
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git apply gh-pages/patch
+          npm run prepublish
+          npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - uses: JS-DevTools/npm-publish@v1
         with:

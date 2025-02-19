@@ -250,6 +250,8 @@
     "CATEGORY_OPERATORS": "Operators",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "My Blocks",
+    "COPY": "Copy",
+    "PASTE": "Paste",
     "DUPLICATE": "Duplicate",
     "DELETE": "Delete",
     "ADD_COMMENT": "Add Comment",

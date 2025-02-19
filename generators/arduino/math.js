@@ -46,6 +46,10 @@ Blockly.Arduino['math_uint8_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_int9_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_uint10_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_int11_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_uint16_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_int0to100_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_0to100_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_intn100to100_number'] = Blockly.Arduino['math_number'];
+Blockly.Arduino['math_n100to100_number'] = Blockly.Arduino['math_number'];
 Blockly.Arduino['math_half_angle'] = Blockly.Arduino['math_number'];
 

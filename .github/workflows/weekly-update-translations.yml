@@ -6,7 +6,7 @@ on:
 
 jobs:
   weekly-update:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
@@ -26,9 +26,15 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '2.x'
+      - name: Set up Python 2.7
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python2.7 python2.7-dev python2-pip-whl
+          sudo ln -sf python2.7 /usr/bin/python
+          export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
+          sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
+          sudo chown -R $USER /usr/local/lib/python2.7
 
       - run: npm ci
 
@@ -56,6 +62,9 @@ jobs:
       - name: Set test env
         if: ${{ steps.git-check.outputs.modified == 'true' }}
         run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+          npm install --save-dev chromedriver@$CHROME_MAJOR_VERSION
           export DISPLAY=:99.0
           tests/scripts/setup_linux_env.sh
           sleep 2

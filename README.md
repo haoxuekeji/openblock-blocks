@@ -2,12 +2,9 @@
 ![](https://img.shields.io/travis/com/openblockcc/hxblock-blocks) ![](https://img.shields.io/github/license/openblockcc/hxblock-blocks)
 
 
-## Instructions
+## Getting Start
 
-```
-npm install
-npm link
-```
+Visit the wiki: [https://wiki.openblock.cc](https://wiki.openblock.cc)
 
 ## Attention
 

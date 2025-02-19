@@ -22,5 +22,8 @@ common.pyc
 # Build created files
 /gh-pages
 
+# Chromedriver
+/LICENSE.chromedriver
+
 # Exclude already built packages from testing with npm pack
 /hxblock-blocks-*.{tar,tgz}

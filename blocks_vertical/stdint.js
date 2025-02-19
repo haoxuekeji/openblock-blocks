@@ -141,6 +141,52 @@ Blockly.Blocks['math_int11_number'] = {
   }
 };
 
+Blockly.Blocks['math_uint16_number'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "precision": 1,
+          "min": "0",
+          "max": "65535"
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+
+Blockly.Blocks['math_int0to100_number'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "precision": 1,
+          "min": "0",
+          "max": "100"
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+
 Blockly.Blocks['math_0to100_number'] = {
   init: function() {
     this.jsonInit({
@@ -162,6 +208,53 @@ Blockly.Blocks['math_0to100_number'] = {
     });
   }
 };
+
+Blockly.Blocks['math_intn100to100_number'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "precision": 1,
+          "min": "-100",
+          "max": "100"
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+
+Blockly.Blocks['math_n100to100_number'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "field_slider",
+          "name": "NUM",
+          "value": "0",
+          "min": "-100",
+          "max": "100"
+        }
+      ],
+      "output": "Number",
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField
+    });
+  }
+};
+
+
 
 Blockly.Blocks['math_half_angle'] = {
   init: function() {

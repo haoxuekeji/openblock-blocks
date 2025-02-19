@@ -70,9 +70,9 @@ Blockly.Arduino['procedures_prototype'] = function(block) {
   var argName = block.displayNames_;
   var argCode = [];
 
-  funcName = funcName.replace(/ /g,'_');
+  funcName = funcName.replace(/ /g, '_');
   for (var i = 0; i < argName.length; i++) {
-    var ch = funcName.charAt(funcName.indexOf('%') + 1);
+    var ch = funcName.charAt(funcName.search(/%[nsb]/g) + 1);
     var safeArgName = Blockly.Arduino.variableDB_.getName(argName[i], Blockly.Procedures.NAME_TYPE);
     Blockly.Arduino.customFunctionsArgName_[argName[i]] = safeArgName;
 
