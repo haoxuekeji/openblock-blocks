@@ -26,39 +26,46 @@ goog.require('Blockly.Arduino');
 Blockly.Arduino['arduino_pin_esp32SetPwmOutput'] = function(block) {
   var arg0 = block.getFieldValue('PIN') || '0';
   var arg1 = Blockly.Arduino.valueToCode(block, 'OUT', Blockly.Arduino.ORDER_UNARY_POSTFIX) || 0;
-  var arg2 = block.getFieldValue('CH') || '0';
 
-  Blockly.Arduino.setups_['esp32SetPwmOutput' + arg0] = 'ledcSetup(' + arg2 + ', 490, 8);';
-  Blockly.Arduino.setups_['esp32SetPwmOutput2' + arg0] = 'ledcAttachPin(' + arg0 + ', ' + arg2 + ');';
+  Blockly.Arduino.includes_['esp32SetPwmOutput'] = '#include <ESP32PWM.h>';
+  Blockly.Arduino.definitions_['esp32SetPwmOutput' + arg0] = 'ESP32PWM pwm_' + arg0 + ';';
+  Blockly.Arduino.setups_['esp32SetPwmOutput' + arg0] = 'pwm_' + arg0 + '.attachPin(' + arg0 + ', 490, 8);';
 
-  var code = "ledcWrite(" + arg2 + ", " + arg1 + ");\n";
+  // https://github.com/espressif/arduino-esp32/issues/11455
+  // Due to this bug in esp32-arduino 3.x, we need to add a delay after attach before writing the duty.
+  // Only one delay is needed, so delete and re-add it to ensure it is generated last.
+  delete Blockly.Arduino.setups_['esp32LedcFix'];
+  Blockly.Arduino.setups_['esp32LedcFix'] = 'delay(40);';
+
+  var code = 'pwm_' + arg0 + '.write(' + arg1 + ');\n';
   return code;
 };
 
 Blockly.Arduino['arduino_pin_esp32SetDACOutput'] = function(block) {
   var arg0 = block.getFieldValue('PIN') || '0';
   var arg1 = Blockly.Arduino.valueToCode(block, 'OUT', Blockly.Arduino.ORDER_UNARY_POSTFIX) || 0;
-  var code = "dacWrite(" + arg0 + ", " + arg1 + ");\n";
+  var code = 'dacWrite(' + arg0 + ', ' + arg1 + ');\n';
   return code;
 };
 
-
 Blockly.Arduino['arduino_pin_esp32ReadTouchPin'] = function(block) {
   var arg0 = block.getFieldValue('PIN') || '0';
-  var code = "touchRead(" + arg0 + ")";
+  var code = 'touchRead(' + arg0 + ')';
   return [code, Blockly.Arduino.ORDER_ATOMIC];
 };
 
 Blockly.Arduino['arduino_pin_esp32SetServoOutput'] = function(block) {
   var arg0 = block.getFieldValue('PIN') || '0';
   var arg1 = Blockly.Arduino.valueToCode(block, 'OUT', Blockly.Arduino.ORDER_UNARY_POSTFIX) || 0;
-  var arg2 = block.getFieldValue('CH') || '0';
 
-  Blockly.Arduino.includes_['esp32SetServoOutput'] = '#include <Servo.h>';
+  Blockly.Arduino.includes_['esp32SetServoOutput'] = '#include <ESP32Servo.h>';
   Blockly.Arduino.definitions_['esp32SetServoOutput' + arg0] = 'Servo servo_' + arg0 + ';';
-  Blockly.Arduino.setups_['esp32SetServoOutput' + arg0] = 'servo_' + arg0 + '.attach' + '(' + arg0 + ', ' + arg2 + ');';
+  Blockly.Arduino.setups_['esp32SetServoOutput' + arg0] = 'servo_' + arg0 + '.attach' + '(' + arg0 + ');';
 
-  var code = 'servo_' + arg0 + '.write' + '(' + arg1 + ');\n';
+  delete Blockly.Arduino.setups_['esp32LedcFix'];
+  Blockly.Arduino.setups_['esp32LedcFix'] = 'delay(40);';
+
+  var code = 'servo_' + arg0 + '.write(' + arg1 + ');\n';
   return code;
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "hxblock-blocks",
-  "version": "0.1.0-20250219202900",
+  "version": "0.1.0-20260313161300",
   "description": "OpenBlock Blocks is a library for building creative computing interfaces.",
   "author": "Massachusetts Institute of Technology",
   "license": "Apache-2.0",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "async": "2.6.3",
-    "chromedriver": "^126.0.4",
+    "chromedriver": "^135.0.4",
     "copy-webpack-plugin": "4.6.0",
     "eslint": "4.19.1",
     "event-stream": "3.3.5",
