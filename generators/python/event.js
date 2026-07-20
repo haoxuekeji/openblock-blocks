@@ -35,6 +35,16 @@ Blockly.Python['event_whenmicrobitbegin'] = function (block) {
   return code;
 };
 
+Blockly.Python['event_whenmicropythonbegin'] = function (block) {
+  var code = "";
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (!nextBlock) {
+    code += "pass\n";
+  }
+
+  return code;
+};
+
 Blockly.Python['event_whenmicrobitbuttonpressed'] = function (block) {
   Blockly.Python.imports_["microbit"] = "from microbit import *";
 

@@ -26,7 +26,13 @@ goog.require('Blockly.Python');
 Blockly.Python['control_wait'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'DURATION',
     Blockly.Python.ORDER_FUNCTION_CALL);
-  var code = "sleep(" + arg0 + " * 1000" + ")\n";
+  // The microbit firmware provides a global sleep(ms). Other MicroPython
+  // boards (esp32 etc.) only have time.sleep(seconds).
+  if (block.getRootBlock().type.indexOf('event_whenmicrobit') === 0) {
+    return "sleep(" + arg0 + " * 1000" + ")\n";
+  }
+  Blockly.Python.imports_['time'] = 'import time';
+  var code = "time.sleep(" + arg0 + ")\n";
   return code;
 };
 
@@ -52,7 +58,8 @@ Blockly.Python['control_forever'] = function (block) {
   var code = "while True:\n";
   code += branch;
 
-  if (block.getRootBlock().type === 'event_whenmicrobitbegin') {
+  var rootType = block.getRootBlock().type;
+  if (rootType === 'event_whenmicrobitbegin' || rootType === 'event_whenmicropythonbegin') {
     Blockly.Python.firstLoop = false;
     code += Blockly.Python.INDENT + "repeat()\n";
   }
