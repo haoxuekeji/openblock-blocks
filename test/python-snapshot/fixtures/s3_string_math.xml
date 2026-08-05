@@ -1,0 +1,136 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varS">s</variable>
+    <variable type="" id="varN">n</variable>
+    <variable type="" id="varC">c</variable>
+    <variable type="" id="varM">m</variable>
+    <variable type="" id="varR">r</variable>
+    <variable type="" id="varD">d</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat3" x="10" y="10">
+    <next>
+      <block type="data_setvariableto" id="s3b1">
+        <field name="VARIABLE" id="varS">s</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+          <block type="operator_join" id="s3b2">
+            <value name="STRING1">
+              <shadow type="text">
+                <field name="TEXT">py</field>
+              </shadow>
+            </value>
+            <value name="STRING2">
+              <shadow type="text">
+                <field name="TEXT">thon</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="data_setvariableto" id="s3b3">
+            <field name="VARIABLE" id="varN">n</field>
+            <value name="VALUE">
+              <shadow type="text">
+                <field name="TEXT"></field>
+              </shadow>
+              <block type="operator_length" id="s3b4">
+                <value name="STRING">
+                  <shadow type="text">
+                    <field name="TEXT"></field>
+                  </shadow>
+                  <block type="data_variable" id="s3b5">
+                    <field name="VARIABLE" id="varS">s</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="data_setvariableto" id="s3b6">
+                <field name="VARIABLE" id="varC">c</field>
+                <value name="VALUE">
+                  <shadow type="text">
+                    <field name="TEXT"></field>
+                  </shadow>
+                  <block type="operator_letter_of" id="s3b7">
+                    <value name="LETTER">
+                      <shadow type="math_whole_number">
+                        <field name="NUM">2</field>
+                      </shadow>
+                    </value>
+                    <value name="STRING">
+                      <shadow type="text">
+                        <field name="TEXT"></field>
+                      </shadow>
+                      <block type="data_variable" id="s3b8">
+                        <field name="VARIABLE" id="varS">s</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="data_setvariableto" id="s3b9">
+                    <field name="VARIABLE" id="varM">m</field>
+                    <value name="VALUE">
+                      <shadow type="text">
+                        <field name="TEXT"></field>
+                      </shadow>
+                      <block type="operator_mathop" id="s3b10">
+                        <field name="OPERATOR">sqrt</field>
+                        <value name="NUM">
+                          <shadow type="math_number">
+                            <field name="NUM">16</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="data_setvariableto" id="s3b11">
+                        <field name="VARIABLE" id="varR">r</field>
+                        <value name="VALUE">
+                          <shadow type="text">
+                            <field name="TEXT"></field>
+                          </shadow>
+                          <block type="operator_mod" id="s3b12">
+                            <value name="NUM1">
+                              <shadow type="math_number">
+                                <field name="NUM">17</field>
+                              </shadow>
+                            </value>
+                            <value name="NUM2">
+                              <shadow type="math_number">
+                                <field name="NUM">5</field>
+                              </shadow>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="data_setvariableto" id="s3b13">
+                            <field name="VARIABLE" id="varD">d</field>
+                            <value name="VALUE">
+                              <shadow type="text">
+                                <field name="TEXT"></field>
+                              </shadow>
+                              <block type="operator_round" id="s3b14">
+                                <value name="NUM">
+                                  <shadow type="math_number">
+                                    <field name="NUM">3.7</field>
+                                  </shadow>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

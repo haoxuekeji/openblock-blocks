@@ -42,7 +42,20 @@ Blockly.Python['control_repeat'] = function (block) {
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
 
-  var code = "for count in range(" + repeats + "):\n";
+  // Nested repeat loops each need their own loop variable, otherwise the
+  // inner loop shadows the outer one: count, count2, count3...
+  // These names are declared in Blockly.Python.addReservedWords.
+  var depth = 0;
+  var parent = block.getSurroundParent();
+  while (parent) {
+    if (parent.type === 'control_repeat') {
+      depth++;
+    }
+    parent = parent.getSurroundParent();
+  }
+  var loopVar = depth === 0 ? 'count' : 'count' + (depth + 1);
+
+  var code = "for " + loopVar + " in range(" + repeats + "):\n";
   if (branch) {
     code += branch;
   } else {
@@ -111,6 +124,9 @@ Blockly.Python['control_wait_until'] = function (block) {
   var code = "while not " + argument + ":\n";
   if (block.getRootBlock().type === 'event_whenmicrobitbegin') {
     code += Blockly.Python.INDENT + "repeat()\n";
+  } else {
+    // A while loop with no body is an IndentationError, busy-wait instead.
+    code += Blockly.Python.INDENT + "pass\n";
   }
   return code;
 };

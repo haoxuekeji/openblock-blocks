@@ -55,8 +55,9 @@ Blockly.Python.addReservedWords(
   'reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,' +
   'min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,' +
   'coerce,dir,id,oct,sorted,intern,' +
-  // Used by code generator
-  'count'
+  // Used by code generator (control_repeat loop variables, one per
+  // nesting depth).
+  'count,count2,count3,count4,count5,count6,count7,count8,count9'
 );
 
 /**
@@ -97,6 +98,9 @@ Blockly.Python.firstLoop = true;
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
 Blockly.Python.init = function (workspace) {
+  // Reset the list of block types without a Python generator met during
+  // this generation pass (see Blockly.Python.blockToCode).
+  Blockly.Python.unsupportedBlocks_ = [];
   // Create a dictionary of imports to be printed at head.
   Blockly.Python.imports_ = Object.create(null);
   // Create a dictionary of custom founction definitions to be printed after imports.
@@ -219,6 +223,10 @@ Blockly.Python.finish = function (code) {
     ret = ret.replace(/ *repeat\(\)\n/g, '');
   }
 
+  // Keep the unsupported block list of this pass readable afterwards
+  // (used by the code preview UI to show a conversion coverage hint).
+  Blockly.Python.lastUnsupportedBlocks_ = Blockly.Python.unsupportedBlocks_ || [];
+
   // Clean up temporary data.
   delete Blockly.Python.imports_;
   delete Blockly.Python.libraries_;
@@ -227,10 +235,86 @@ Blockly.Python.finish = function (code) {
   delete Blockly.Python.loops_;
   delete Blockly.Python.customFunctions_;
   delete Blockly.Python.customFunctionsArgName_;
+  delete Blockly.Python.unsupportedBlocks_;
   Blockly.Python.variableDB_.reset();
   Blockly.Python.firstLoop = true;
 
   return ret;
+};
+
+/**
+ * Comment prefix used as placeholder for blocks that have no Python
+ * generator yet.
+ * @const
+ */
+Blockly.Python.UNSUPPORTED_COMMENT = '\u6682\u4e0d\u652f\u6301\u7684\u79ef\u6728: ';
+
+/**
+ * Generate code for the specified block, degrading gracefully when the
+ * block type has no Python generator registered instead of crashing
+ * (Blockly.Generator.prototype.blockToCode asserts on a missing generator,
+ * which becomes a hard TypeError in compressed builds):
+ * - value blocks fall back to 0 (a comment inside an expression would
+ *   break the surrounding syntax, coverage info tells the story instead);
+ * - statement blocks emit a placeholder comment and keep the stack going;
+ * - hat blocks skip their whole stack, generating a body under an unknown
+ *   trigger would produce misleading code.
+ * Every degraded block type is recorded in unsupportedBlocks_.
+ * @param {Blockly.Block} block The block to generate code for.
+ * @return {string|!Array} Generated code, or [code, order] for value blocks.
+ */
+Blockly.Python.blockToCode = function(block) {
+  if (block && !block.disabled && this.check_(block) &&
+    typeof this[block.type] !== 'function') {
+    if (this.unsupportedBlocks_) {
+      this.unsupportedBlocks_.push(block.type);
+    }
+    var placeholder = '# ' + Blockly.Python.UNSUPPORTED_COMMENT + block.type;
+    if (block.outputConnection) {
+      return ['0', Blockly.Python.ORDER_ATOMIC];
+    }
+    if (block.previousConnection) {
+      return this.scrub_(block, placeholder + '\n');
+    }
+    return placeholder +
+      ' (\u79ef\u6728\u6808\u5df2\u8df3\u8fc7)\n';
+  }
+  return Blockly.Generator.prototype.blockToCode.call(this, block);
+};
+
+/**
+ * Scan a workspace and report which block types can / cannot be converted
+ * to Python. Pure query used for UI hints (e.g. "N blocks cannot be
+ * converted yet"), does not generate any code and has no side effects.
+ * Lookup semantics mirror blockToCode: a block is supported when
+ * Blockly.Python[type] is a function.
+ * @param {Blockly.Workspace} workspace Workspace to scan.
+ * @return {{supported: !Object.<string, number>,
+ *     unsupported: !Object.<string, number>,
+ *     unsupportedTotal: number}} Block counts keyed by block type.
+ */
+Blockly.Python.getCoverage = function(workspace) {
+  var supported = Object.create(null);
+  var unsupported = Object.create(null);
+  var unsupportedTotal = 0;
+  var blocks = workspace ? workspace.getAllBlocks() : [];
+  for (var i = 0; i < blocks.length; i++) {
+    var block = blocks[i];
+    if (block.disabled) {
+      continue;
+    }
+    if (typeof Blockly.Python[block.type] === 'function') {
+      supported[block.type] = (supported[block.type] || 0) + 1;
+    } else {
+      unsupported[block.type] = (unsupported[block.type] || 0) + 1;
+      unsupportedTotal++;
+    }
+  }
+  return {
+    supported: supported,
+    unsupported: unsupported,
+    unsupportedTotal: unsupportedTotal
+  };
 };
 
 /**

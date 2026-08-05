@@ -1,0 +1,48 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varReady">ready</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat6" x="10" y="10">
+    <next>
+      <block type="data_setvariableto" id="s6b1">
+        <field name="VARIABLE" id="varReady">ready</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">0</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="control_wait_until" id="s6b2">
+            <value name="CONDITION">
+              <block type="operator_gt" id="s6b3">
+                <value name="OPERAND1">
+                  <shadow type="text">
+                    <field name="TEXT"></field>
+                  </shadow>
+                  <block type="data_variable" id="s6b4">
+                    <field name="VARIABLE" id="varReady">ready</field>
+                  </block>
+                </value>
+                <value name="OPERAND2">
+                  <shadow type="text">
+                    <field name="TEXT">3</field>
+                  </shadow>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="data_setvariableto" id="s6b5">
+                <field name="VARIABLE" id="varReady">ready</field>
+                <value name="VALUE">
+                  <shadow type="text">
+                    <field name="TEXT">done</field>
+                  </shadow>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

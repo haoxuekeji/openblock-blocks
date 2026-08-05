@@ -1,0 +1,98 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="list" id="listScores">scores</variable>
+    <variable type="" id="varReport">report</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat2" x="10" y="10">
+    <next>
+      <block type="data_deletealloflist" id="s2b1">
+        <field name="LIST" id="listScores" variabletype="list">scores</field>
+        <next>
+          <block type="control_repeat" id="s2b2">
+            <value name="TIMES">
+              <shadow type="math_whole_number">
+                <field name="NUM">5</field>
+              </shadow>
+            </value>
+            <statement name="SUBSTACK">
+              <block type="data_addtolist" id="s2b3">
+                <field name="LIST" id="listScores" variabletype="list">scores</field>
+                <value name="ITEM">
+                  <shadow type="text">
+                    <field name="TEXT">thing</field>
+                  </shadow>
+                  <block type="operator_random" id="s2b4">
+                    <value name="FROM">
+                      <shadow type="math_number">
+                        <field name="NUM">1</field>
+                      </shadow>
+                    </value>
+                    <value name="TO">
+                      <shadow type="math_number">
+                        <field name="NUM">100</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="data_setvariableto" id="s2b5">
+                <field name="VARIABLE" id="varReport">report</field>
+                <value name="VALUE">
+                  <shadow type="text">
+                    <field name="TEXT"></field>
+                  </shadow>
+                  <block type="operator_join" id="s2b6">
+                    <value name="STRING1">
+                      <shadow type="text">
+                        <field name="TEXT">first=</field>
+                      </shadow>
+                    </value>
+                    <value name="STRING2">
+                      <shadow type="text">
+                        <field name="TEXT"></field>
+                      </shadow>
+                      <block type="data_itemoflist" id="s2b7">
+                        <field name="LIST" id="listScores" variabletype="list">scores</field>
+                        <value name="INDEX">
+                          <shadow type="math_integer">
+                            <field name="NUM">1</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="control_if" id="s2b8">
+                    <value name="CONDITION">
+                      <block type="data_listcontainsitem" id="s2b9">
+                        <field name="LIST" id="listScores" variabletype="list">scores</field>
+                        <value name="ITEM">
+                          <shadow type="text">
+                            <field name="TEXT">50</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="SUBSTACK">
+                      <block type="data_deleteoflist" id="s2b10">
+                        <field name="LIST" id="listScores" variabletype="list">scores</field>
+                        <value name="INDEX">
+                          <shadow type="math_integer">
+                            <field name="NUM">1</field>
+                          </shadow>
+                        </value>
+                      </block>
+                    </statement>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

@@ -1,0 +1,44 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varTotal">total</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat7" x="10" y="10">
+    <next>
+      <block type="control_repeat" id="s7b1">
+        <value name="TIMES">
+          <shadow type="math_whole_number">
+            <field name="NUM">3</field>
+          </shadow>
+        </value>
+        <statement name="SUBSTACK">
+          <block type="control_repeat" id="s7b2">
+            <value name="TIMES">
+              <shadow type="math_whole_number">
+                <field name="NUM">2</field>
+              </shadow>
+            </value>
+            <statement name="SUBSTACK">
+              <block type="control_repeat" id="s7b3">
+                <value name="TIMES">
+                  <shadow type="math_whole_number">
+                    <field name="NUM">2</field>
+                  </shadow>
+                </value>
+                <statement name="SUBSTACK">
+                  <block type="data_changevariableby" id="s7b4">
+                    <field name="VARIABLE" id="varTotal">total</field>
+                    <value name="VALUE">
+                      <shadow type="math_number">
+                        <field name="NUM">1</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
