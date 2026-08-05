@@ -48,6 +48,7 @@ Blockly.Python['operator_divide'] = Blockly.Python['operator_arithmetic'];
 Blockly.Python['operator_random'] = function (block) {
   var arg0 = Blockly.Python.valueToCode(block, 'FROM', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var arg1 = Blockly.Python.valueToCode(block, 'TO', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
+  Blockly.Python.imports_['random'] = 'import random';
   var code = "random.randint(" + arg0 + ", " + arg1 + ")";
   return [code, Blockly.Python.ORDER_FUNCTION_CALL];
 };

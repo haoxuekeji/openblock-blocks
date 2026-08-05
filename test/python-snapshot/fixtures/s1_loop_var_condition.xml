@@ -1,0 +1,87 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varTotal">total</variable>
+    <variable type="" id="varStep">step</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat1" x="10" y="10">
+    <next>
+      <block type="data_setvariableto" id="s1b1">
+        <field name="VARIABLE" id="varTotal">total</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">0</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="control_repeat" id="s1b2">
+            <value name="TIMES">
+              <shadow type="math_whole_number">
+                <field name="NUM">10</field>
+              </shadow>
+            </value>
+            <statement name="SUBSTACK">
+              <block type="data_changevariableby" id="s1b3">
+                <field name="VARIABLE" id="varTotal">total</field>
+                <value name="VALUE">
+                  <shadow type="math_number">
+                    <field name="NUM">2</field>
+                  </shadow>
+                </value>
+                <next>
+                  <block type="control_wait" id="s1b4">
+                    <value name="DURATION">
+                      <shadow type="math_positive_number">
+                        <field name="NUM">0.5</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <next>
+              <block type="control_if_else" id="s1b5">
+                <value name="CONDITION">
+                  <block type="operator_gt" id="s1b6">
+                    <value name="OPERAND1">
+                      <shadow type="text">
+                        <field name="TEXT"></field>
+                      </shadow>
+                      <block type="data_variable" id="s1b7">
+                        <field name="VARIABLE" id="varTotal">total</field>
+                      </block>
+                    </value>
+                    <value name="OPERAND2">
+                      <shadow type="text">
+                        <field name="TEXT">15</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </value>
+                <statement name="SUBSTACK">
+                  <block type="data_setvariableto" id="s1b8">
+                    <field name="VARIABLE" id="varStep">step</field>
+                    <value name="VALUE">
+                      <shadow type="text">
+                        <field name="TEXT">big</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </statement>
+                <statement name="SUBSTACK2">
+                  <block type="data_setvariableto" id="s1b9">
+                    <field name="VARIABLE" id="varStep">step</field>
+                    <value name="VALUE">
+                      <shadow type="text">
+                        <field name="TEXT">small</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

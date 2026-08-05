@@ -1,0 +1,54 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varMsg">msg</variable>
+  </variables>
+  <block type="procedures_definition" id="s4def" x="10" y="10">
+    <statement name="custom_block">
+      <shadow type="procedures_prototype" id="s4proto">
+        <mutation proccode="greet %s %n" argumentids="[&quot;argWho&quot;,&quot;argTimes&quot;]" argumentnames="[&quot;who&quot;,&quot;times&quot;]" argumentdefaults="[&quot;&quot;,&quot;1&quot;]" warp="false" generateshadows="true"></mutation>
+      </shadow>
+    </statement>
+    <next>
+      <block type="data_setvariableto" id="s4b1">
+        <field name="VARIABLE" id="varMsg">msg</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+          <block type="operator_join" id="s4b2">
+            <value name="STRING1">
+              <shadow type="text">
+                <field name="TEXT"></field>
+              </shadow>
+              <block type="argument_reporter_string" id="s4b3">
+                <field name="VALUE">who</field>
+              </block>
+            </value>
+            <value name="STRING2">
+              <shadow type="text">
+                <field name="TEXT">!</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+      </block>
+    </next>
+  </block>
+  <block type="event_whenmicropythonbegin" id="hat4" x="10" y="300">
+    <next>
+      <block type="procedures_call" id="s4call">
+        <mutation proccode="greet %s %n" argumentids="[&quot;argWho&quot;,&quot;argTimes&quot;]" warp="false"></mutation>
+        <value name="argWho">
+          <shadow type="text">
+            <field name="TEXT">hi</field>
+          </shadow>
+        </value>
+        <value name="argTimes">
+          <shadow type="math_number">
+            <field name="NUM">3</field>
+          </shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>

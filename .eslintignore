@@ -6,6 +6,7 @@
 /tests/jsunit/*
 /tests/workspace_svg/*
 /tests/blocks/*
+/test/python-snapshot/*
 /demos/*
 /accessible/*
 /appengine/*

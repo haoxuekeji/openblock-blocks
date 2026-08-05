@@ -333,7 +333,9 @@ Blockly.ScratchBlocks.ProcedureUtils.attachShadow_ = function(input,
         newBlock.setFieldValue('', 'TEXT');
       }
       newBlock.setShadow(true);
-      if (!this.isInsertionMarker()) {
+      // In headless workspaces blocks have no rendering API (initSvg is
+      // only defined on Blockly.BlockSvg), e.g. server side generation.
+      if (!this.isInsertionMarker() && typeof newBlock.initSvg === 'function') {
         newBlock.initSvg();
         newBlock.render(false);
       }
@@ -373,7 +375,8 @@ Blockly.ScratchBlocks.ProcedureUtils.createArgumentReporter_ = function(
     var newBlock = this.workspace.newBlock(blockType);
     newBlock.setShadow(true);
     newBlock.setFieldValue(displayName, 'VALUE');
-    if (!this.isInsertionMarker()) {
+    // Headless workspaces have no rendering API (server side generation).
+    if (!this.isInsertionMarker() && typeof newBlock.initSvg === 'function') {
       newBlock.initSvg();
       newBlock.render(false);
     }
@@ -555,7 +558,8 @@ Blockly.ScratchBlocks.ProcedureUtils.createArgumentEditor_ = function(
     }
     newBlock.setFieldValue(displayName, 'TEXT');
     newBlock.setShadow(true);
-    if (!this.isInsertionMarker()) {
+    // Headless workspaces have no rendering API (server side generation).
+    if (!this.isInsertionMarker() && typeof newBlock.initSvg === 'function') {
       newBlock.initSvg();
       newBlock.render(false);
     }

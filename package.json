@@ -17,6 +17,7 @@
     "prepublish": "python build.py && webpack",
     "clean": "rm *compressed.js && rm blockly*.js && rm blocks*.js",
     "test:unit": "node tests/jsunit/test_runner.js",
+    "test:python-snapshot": "node test/python-snapshot/run_snapshot_tests.js",
     "test:lint": "eslint .",
     "test:messages": "npm run translate && node i18n/test_scratch_msgs.js",
     "test": "npm run test:lint && npm run test:messages && npm run test:unit",
@@ -29,8 +30,8 @@
   "dependencies": {
     "exports-loader": "0.6.3",
     "google-closure-library": "20190301.0.0",
-    "imports-loader": "0.6.5",
-    "hxblock-l10n": "latest"
+    "hxblock-l10n": "latest",
+    "imports-loader": "0.6.5"
   },
   "devDependencies": {
     "async": "2.6.3",
@@ -42,6 +43,7 @@
     "glob": "7.2.0",
     "google-closure-compiler": "20180402.0.0",
     "graceful-fs": "4.2.8",
+    "jsdom": "^16.7.0",
     "json": "9.0.4",
     "rimraf": "2.6.2",
     "selenium-webdriver": "^4.0.0-alpha.1",
