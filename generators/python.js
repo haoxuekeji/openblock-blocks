@@ -368,12 +368,12 @@ Blockly.Python.scrub_ = function (block, code) {
     // Add indent at start except custom function
     if (block.type !== 'procedures_definition'
       && block.type !== 'procedures_prototype') {
-      codeWithIndent = Blockly.Arduino.INDENT + codeWithIndent;
+      codeWithIndent = Blockly.Python.INDENT + codeWithIndent;
       if (commentCode !== '') {
-        commentCode = Blockly.Arduino.INDENT + commentCode;
+        commentCode = Blockly.Python.INDENT + commentCode;
       }
     }
-    codeWithIndent = codeWithIndent.replace(/\n/g, "\n" + Blockly.Arduino.INDENT);
+    codeWithIndent = codeWithIndent.replace(/\n/g, "\n" + Blockly.Python.INDENT);
     // Delet final indent
     codeWithIndent = codeWithIndent.slice(0, codeWithIndent.length - 2);
   }

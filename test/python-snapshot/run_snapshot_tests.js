@@ -1,9 +1,9 @@
 /**
  * Python generator snapshot tests (FUN-001A).
  *
- * Loads the built artifacts exactly the way openblock-gui does
- * (dist/vertical.js + arduino_compressed.js + python_compressed.js,
- * see openblock-gui/src/containers/blocks.jsx), deserializes each fixture
+ * Loads the built artifacts the way the openblock-gui save-snapshot path
+ * does (dist/vertical.js + python_compressed.js standalone, see
+ * openblock-gui/src/lib/python-snapshot.js), deserializes each fixture
  * workspace XML headlessly and asserts:
  *   1. generation does not throw (including unsupported stage blocks);
  *   2. the generated Python matches the snapshot in expected/;
@@ -65,9 +65,16 @@ const loadGenerator = file => {
     new Function('Blockly', src)(ScratchBlocks);
 };
 
-// Python generator depends on the Arduino one (math number blocks).
-loadGenerator('arduino_compressed.js');
+// python_compressed.js must be loadable on its own: the GUI save-snapshot
+// path (openblock-gui/src/lib/python-snapshot.js, FUN-001C) imports it
+// without arduino_compressed.js. A stray Blockly.Arduino reference in the
+// generator sources makes this throw at load time and white-screens the GUI.
 loadGenerator('python_compressed.js');
+
+if (typeof ScratchBlocks.Python['math_n100to100_number'] !== 'function') {
+    process.stderr.write('FAIL math_n100to100_number generator missing after standalone load\n');
+    process.exit(1);
+}
 
 // --- Helpers ---------------------------------------------------------------
 
