@@ -50,5 +50,5 @@ Blockly.Python['math_uint16_number'] = Blockly.Python['math_number'];
 Blockly.Python['math_int0to100_number'] = Blockly.Python['math_number'];
 Blockly.Python['math_0to100_number'] = Blockly.Python['math_number'];
 Blockly.Python['math_intn100to100_number'] = Blockly.Python['math_number'];
-Blockly.Python['math_n100to100_number'] = Blockly.Arduino['math_number'];
+Blockly.Python['math_n100to100_number'] = Blockly.Python['math_number'];
 Blockly.Python['math_half_angle'] = Blockly.Python['math_number'];
