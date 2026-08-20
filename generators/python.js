@@ -380,7 +380,51 @@ Blockly.Python.scrub_ = function (block, code) {
 
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
   var nextCode = Blockly.Python.blockToCode(nextBlock);
+
+  // A top-level hat whose generator did not open a suite (no trailing ':'
+  // header such as `def xxx():`) cannot legally own the indented body the
+  // child branch above produced. This happens when a realtime-only hat
+  // (e.g. event_whenflagclicked) has a generator that emits no wrapper:
+  // the file would die with IndentationError at boot. Degrade the stack to
+  // top-level code (runs once at boot, closest to the hat's intent) and
+  // leave a notice.
+  if (block.getSurroundParent() === null &&
+    block.previousConnection === null && block.outputConnection === null &&
+    typeof nextCode === 'string' && nextCode !== '' &&
+    nextCode.substring(0, Blockly.Python.INDENT.length) === Blockly.Python.INDENT &&
+    !Blockly.Python.acceptsIndentedBody_(code)) {
+    var indent = Blockly.Python.INDENT;
+    var dedented = nextCode.split('\n').map(function(line) {
+      return line.indexOf(indent) === 0 ? line.substring(indent.length) : line;
+    }).join('\n');
+    // '提示: <type> 帽子未生成函数头,子栈降级为开机顺序执行'
+    var notice = '# \u63d0\u793a: ' + block.type +
+      ' \u5e3d\u5b50\u672a\u751f\u6210\u51fd\u6570\u5934,' +
+      '\u5b50\u6808\u964d\u7ea7\u4e3a\u5f00\u673a\u987a\u5e8f\u6267\u884c\n';
+    return commentCode + codeWithIndent + notice + dedented;
+  }
+
   return commentCode + codeWithIndent + nextCode;
+};
+
+/**
+ * Whether an indented body may legally follow a chunk of generated Python:
+ * either its last non-empty line opens a suite (ends with a colon,
+ * optionally followed by a comment), or that line is itself indented
+ * (already inside a suite the code opened earlier, e.g.
+ * `def f():\n  global x`).
+ * @param {string} code Generated Python code of a hat block.
+ * @return {boolean} True when an indented body is legal after this code.
+ * @private
+ */
+Blockly.Python.acceptsIndentedBody_ = function(code) {
+  var trimmed = String(code || '').replace(/\s+$/, '');
+  if (trimmed === '') {
+    return false;
+  }
+  var lines = trimmed.split('\n');
+  var lastLine = lines[lines.length - 1];
+  return /:\s*(#[^\n]*)?$/.test(lastLine) || (/^\s/).test(lastLine);
 };
 
 /**

@@ -205,6 +205,74 @@ for (const fixtureFile of fixtures) {
     }
 }
 
+// --- P2-4: hats whose generator opens no suite must not own an indented body
+
+// Simulates a realtime-only hat that has a Python generator but emits no
+// wrapping `def ...:` header (the upload-mode conversion trap): the stack
+// must degrade to legal top-level code instead of IndentationError at boot.
+const p24Xml = `<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables><variable type="" id="varX">x</variable></variables>
+  <block type="event_whenflagclicked" id="p24hat" x="10" y="10">
+    <next>
+      <block type="data_setvariableto" id="p24b1">
+        <field name="VARIABLE" id="varX">x</field>
+        <value name="VALUE"><shadow type="text"><field name="TEXT">1</field></shadow></value>
+        <next>
+          <block type="control_if" id="p24b2">
+            <statement name="SUBSTACK">
+              <block type="data_changevariableby" id="p24b3">
+                <field name="VARIABLE" id="varX">x</field>
+                <value name="VALUE"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>`;
+
+const compileCheck = (fixture, label, code) => {
+    const pyFile = path.join(tmpDir, `${fixture}.py`);
+    fs.writeFileSync(pyFile, code);
+    try {
+        execFileSync('python3', ['-m', 'py_compile', pyFile], {stdio: 'pipe'});
+    } catch (err) {
+        check(fixture, label, false, `${String(err.stderr)}\n---- code ----\n${code}`);
+    }
+};
+
+try {
+    // Hat generator without a suite header: stack degrades to top level.
+    ScratchBlocks.Python.event_whenflagclicked = () => '';
+    const flat = generate(p24Xml);
+    check('p2-4_headerless_hat', 'degradation notice emitted',
+        flat.code.includes('event_whenflagclicked \u5e3d\u5b50\u672a\u751f\u6210\u51fd\u6570\u5934'),
+        flat.code);
+    check('p2-4_headerless_hat', 'children land at top level (no leading indent)',
+        flat.code.includes('\nx = 1\n') && flat.code.includes('\nif False:\n'),
+        flat.code);
+    check('p2-4_headerless_hat', 'nested body keeps one indent level',
+        /\nif False:\n {2}x \+= 2\n/.test(flat.code),
+        flat.code);
+    compileCheck('p2-4_headerless_hat', 'py_compile must pass', flat.code);
+
+    // Hat generator that does open a suite keeps the indented body as-is.
+    ScratchBlocks.Python.event_whenflagclicked = () => 'def on_flag_clicked():\n';
+    const wrapped = generate(p24Xml);
+    check('p2-4_wrapping_hat', 'suite-opening hat keeps indented body',
+        wrapped.code.includes('def on_flag_clicked():\n  x = 1\n'),
+        wrapped.code);
+    check('p2-4_wrapping_hat', 'no degradation notice for wrapping hat',
+        !wrapped.code.includes('\u5e3d\u5b50\u672a\u751f\u6210\u51fd\u6570\u5934'),
+        wrapped.code);
+    compileCheck('p2-4_wrapping_hat', 'py_compile must pass', wrapped.code);
+} catch (err) {
+    check('p2-4', 'generation must not throw', false, err.stack.split('\n', 3).join('\n'));
+} finally {
+    delete ScratchBlocks.Python.event_whenflagclicked;
+}
+
 process.stdout.write(`\n${generatedCount}/${fixtures.length} fixtures generated`);
 if (update && !failures.length) {
     process.stdout.write(', snapshots refreshed.\n');
