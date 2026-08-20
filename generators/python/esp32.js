@@ -168,6 +168,14 @@ Blockly.Python['microPython_console_consoleInput'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
+Blockly.Python['microPython_console_esp32SetBleName'] = function (block) {
+  var name = Blockly.Python.valueToCode(block, 'NAME', Blockly.Python.ORDER_FUNCTION_CALL) || '\'\'';
+  Blockly.Python.imports_['obble'] = 'import obble';
+
+  var code = 'obble.set_name(' + name + ')\n';
+  return code;
+};
+
 Blockly.Python['microPython_neopixel_neopixelInit'] = function (block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['neopixel'] = 'import neopixel';
