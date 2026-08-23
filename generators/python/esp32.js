@@ -134,6 +134,20 @@ Blockly.Python['microPython_pin_esp32ReadTouchPin'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
+// Servo objects live in a dict so a released pin can be driven again later:
+// _ob_servo() recreates the PWM on demand, _ob_servo_release() deinits it.
+// 0 degree -> 0.5ms pulse -> duty 26, 180 degree -> 2.5ms pulse -> duty 128.
+var esp32ServoHelper =
+  '_ob_servos = {}\n' +
+  'def _ob_servo(pin, angle):\n' +
+  '    if pin not in _ob_servos:\n' +
+  '        _ob_servos[pin] = PWM(Pin(pin), freq=50)\n' +
+  '    angle = min(180, max(0, angle))\n' +
+  '    _ob_servos[pin].duty(int(25.6 + angle * 102.4 / 180))\n' +
+  'def _ob_servo_release(pin):\n' +
+  '    if pin in _ob_servos:\n' +
+  '        _ob_servos.pop(pin).deinit()\n';
+
 Blockly.Python['microPython_pin_setServoOutput'] = function (block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
@@ -141,10 +155,21 @@ Blockly.Python['microPython_pin_setServoOutput'] = function (block) {
   var pin = block.getFieldValue('PIN') || '4';
   var out = Blockly.Python.valueToCode(block, 'OUT', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
 
-  Blockly.Python.setups_['servo_' + pin] = 'servo' + pin + ' = PWM(Pin(' + pin + '), freq=50)';
+  Blockly.Python.customFunctions_['servo'] = esp32ServoHelper;
 
-  // 0 degree -> 0.5ms pulse -> duty 26, 180 degree -> 2.5ms pulse -> duty 128.
-  var code = 'servo' + pin + '.duty(int(25.6 + (' + out + ') * 102.4 / 180))\n';
+  var code = '_ob_servo(' + pin + ', int(' + out + '))\n';
+  return code;
+};
+
+Blockly.Python['microPython_pin_servoRelease'] = function (block) {
+  Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
+  Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
+
+  var pin = block.getFieldValue('PIN') || '4';
+
+  Blockly.Python.customFunctions_['servo'] = esp32ServoHelper;
+
+  var code = '_ob_servo_release(' + pin + ')\n';
   return code;
 };
 
@@ -193,7 +218,10 @@ Blockly.Python['microPython_neopixel_neopixelSetColor'] = function (block) {
   var g = Blockly.Python.valueToCode(block, 'G', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var b = Blockly.Python.valueToCode(block, 'B', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
 
-  var code = '_ob_np[int(' + index + ')] = (int(' + r + '), int(' + g + '), int(' + b + '))\n';
+  Blockly.Python.setups_['neopixel_brt'] = '_ob_np_brt = 1.0';
+
+  var code = '_ob_np[int(' + index + ')] = (int(int(' + r + ') * _ob_np_brt), ' +
+    'int(int(' + g + ') * _ob_np_brt), int(int(' + b + ') * _ob_np_brt))\n';
   return code;
 };
 
@@ -202,7 +230,19 @@ Blockly.Python['microPython_neopixel_neopixelFill'] = function (block) {
   var g = Blockly.Python.valueToCode(block, 'G', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var b = Blockly.Python.valueToCode(block, 'B', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
 
-  var code = '_ob_np.fill((int(' + r + '), int(' + g + '), int(' + b + ')))\n';
+  Blockly.Python.setups_['neopixel_brt'] = '_ob_np_brt = 1.0';
+
+  var code = '_ob_np.fill((int(int(' + r + ') * _ob_np_brt), ' +
+    'int(int(' + g + ') * _ob_np_brt), int(int(' + b + ') * _ob_np_brt)))\n';
+  return code;
+};
+
+Blockly.Python['microPython_neopixel_neopixelSetBrightness'] = function (block) {
+  var brt = Blockly.Python.valueToCode(block, 'BRT', Blockly.Python.ORDER_FUNCTION_CALL) || '100';
+
+  Blockly.Python.setups_['neopixel_brt'] = '_ob_np_brt = 1.0';
+
+  var code = '_ob_np_brt = min(100, max(0, int(' + brt + '))) / 100\n';
   return code;
 };
 
