@@ -5,7 +5,9 @@ var builder = new webdriver.Builder().forBrowser('chrome');
 
 if (process.env.CI) {
   // selenium-webdriver >= 4.17 removed Options.headless().
-  const options = new chrome.Options().addArguments('--headless=new');
+  // --disable-dev-shm-usage: CI runners mount a tiny /dev/shm which can
+  // crash the renderer on large pages like the jsunit suites.
+  const options = new chrome.Options().addArguments('--headless=new', '--disable-dev-shm-usage');
   if (process.platform === 'linux') {
     options.addArguments('no-sandbox');
   }

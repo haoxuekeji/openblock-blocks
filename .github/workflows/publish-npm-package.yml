@@ -50,7 +50,24 @@ jobs:
           tests/scripts/setup_linux_env.sh
           sleep 2
 
-      - run: npm test
+      - name: Lint
+        run: npm run test:lint
+
+      - name: Message tests
+        run: |
+          set -o pipefail
+          npm run test:messages 2>&1 | tee /tmp/messages.log || {
+            echo "::error title=test:messages::$(tail -c 700 /tmp/messages.log | tr '\n' '  ')"
+            exit 1
+          }
+
+      - name: Unit tests
+        run: |
+          set -o pipefail
+          npm run test:unit 2>&1 | tee /tmp/unit.log || {
+            echo "::error title=test:unit::$(tail -c 700 /tmp/unit.log | tr '\n' '  ')"
+            exit 1
+          }
 
   publish:
     needs: check
