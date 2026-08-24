@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        # Node 24 is the release baseline. chromedriver >= 120 (installed below
+        # to match the runner's Chrome) requires Node 18+. The python2 build
+        # was moved from the "prepublish" lifecycle hook to an explicit "build"
+        # script, so npm ci needs no python2 here; tests run against the
+        # generated artifacts committed in the repo.
+        node-version: [24.x]
     steps:
       - uses: actions/checkout@v4
 
@@ -21,16 +26,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-      - name: Set up Python 2.7
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python2.7 python2.7-dev python2-pip-whl
-          sudo ln -sf python2.7 /usr/bin/python
-          export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
-          sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
-          sudo chown -R $USER /usr/local/lib/python2.7
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -65,7 +60,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: '24.x'
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -91,47 +86,10 @@ jobs:
 
       - run: npm ci
 
-      - name: Update openblock-l10n
-        run: npm i --save openblock-l10n@latest
-
-      # Don't push translations to TX, just pull, The push step will be run by the distro repository.
-      # - name: Sync translations
-      #   run: |
-      #     export TX_TOKEN=${{ secrets.TX_TOKEN }}
-      #     npm run translate
-      #     npm run translate:update
-      - name: Pull translations
-        run: |
-          export TX_TOKEN=${{ secrets.TX_TOKEN }}
-          npm run translate
-          npm run translate:sync:translations
-
-      - name: Set test env
-        run: |
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
-          npm install --save-dev chromedriver@$CHROME_MAJOR_VERSION
-          export DISPLAY=:99.0
-          tests/scripts/setup_linux_env.sh
-          sleep 2
-
-      - run: npm test
-
-      - name: Check for modified files
-        id: git-check
-        # Check if there are any files update, but ignore the case where only package-lock.json is updated.
-        run: |
-          echo ::set-output name=modified::$(if [ -n "$(git status --porcelain)" ] && [ "$(git status --porcelain)" != " M package-lock.json" ]; then echo "true"; else echo "false"; fi)
-
-      - name: Commit translations
-        if: ${{ steps.git-check.outputs.modified == 'true' }}
-        run: |
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
-          git add .
-          git commit -m '[skip ci] Update translations from transifex'
-          git remote add origin-translation https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git push --set-upstream origin-translation main
+      # Translations live in this repo (hxblock-l10n) and are maintained by
+      # hand; the old "openblock-l10n@latest + Transifex pull + commit back"
+      # steps would overwrite them with upstream content, so they were removed.
+      # Tests already ran in the check job for this same commit.
 
       - name: Get package main version
         id: package-version
@@ -153,10 +111,12 @@ jobs:
         run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git apply gh-pages/patch
-          npm run prepublish
+          npm run build
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # webpack 4 needs the legacy md4 hash on Node 17+.
+          NODE_OPTIONS: --openssl-legacy-provider
 
       - uses: JS-DevTools/npm-publish@v1
         with:

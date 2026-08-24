@@ -11,7 +11,12 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        # Node 24 is the release baseline. chromedriver >= 120 (installed below
+        # to match the runner's Chrome) requires Node 18+. The python2 build
+        # was moved from the "prepublish" lifecycle hook to an explicit "build"
+        # script, so npm ci needs no python2 here; tests run against the
+        # generated artifacts committed in the repo.
+        node-version: [24.x]
     steps:
       - uses: actions/checkout@v4
 
@@ -21,15 +26,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Set up Python 2.7
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python2.7 python2.7-dev python2-pip-whl
-          sudo ln -sf python2.7 /usr/bin/python
-          export PYTHONPATH=`echo /usr/share/python-wheels/pip-*py2*.whl`
-          sudo --preserve-env=PYTHONPATH python -m pip install --upgrade pip setuptools wheel
-          sudo chown -R $USER /usr/local/lib/python2.7
+      - run: npm ci
 
       - name: Set test env
         run: |
@@ -39,7 +36,5 @@ jobs:
           export DISPLAY=:99.0
           tests/scripts/setup_linux_env.sh
           sleep 2
-
-      - run: npm ci
 
       - run: npm test
