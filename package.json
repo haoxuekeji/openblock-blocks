@@ -1,14 +1,14 @@
 {
   "name": "hxblock-blocks",
-  "version": "0.1.0-20260313161300",
+  "version": "0.1.0-20260825004603",
   "description": "OpenBlock Blocks is a library for building creative computing interfaces.",
   "author": "Massachusetts Institute of Technology",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/haoxuekeji/hxblock-blocks#readme",
+  "homepage": "https://github.com/haoxuekeji/openblock-blocks#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/haoxuekeji/hxblock-blocks.git",
-    "sha": "caaffb913a40837cfd4018f0b1aee1101f182e38"
+    "url": "git+https://github.com/haoxuekeji/openblock-blocks.git",
+    "sha": "daf90fd7bfa6a5d194b4028f25c11afebd20e39a"
   },
   "main": "./dist/vertical.js",
   "browser": "./shim/vertical.js",
