@@ -7,6 +7,11 @@ on:
       - 'README.md'
       - '.github/*'
 
+# The built-in GITHUB_TOKEN pushes the release tag and the gh-pages branch;
+# the old GH_TOKEN PAT expired and is no longer needed.
+permissions:
+  contents: write
+
 jobs:
   check:
     runs-on: ubuntu-22.04
@@ -140,7 +145,7 @@ jobs:
       - name: Tag release
         run: |
           git tag $RELEASE_VERSION
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/$GITHUB_REPOSITORY $RELEASE_VERSION
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY $RELEASE_VERSION
 
       - name: Deploy with gh-pages
         run: |
@@ -160,8 +165,8 @@ jobs:
             exit 1
           }
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          REPO_URL: https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           # webpack 4 needs the legacy md4 hash on Node 17+.
           NODE_OPTIONS: --openssl-legacy-provider
 
