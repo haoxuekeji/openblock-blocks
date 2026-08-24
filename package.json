@@ -14,7 +14,8 @@
   "browser": "./shim/vertical.js",
   "scripts": {
     "deploy": "rimraf gh-pages/closure-library/scripts/ci/CloseAdobeDialog.exe && gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
-    "build": "python build.py && webpack",
+    "build": "npm run build:blockly && webpack",
+    "build:blockly": "python build.py",
     "clean": "rm *compressed.js && rm blockly*.js && rm blocks*.js",
     "test:unit": "node tests/jsunit/test_runner.js",
     "test:python-snapshot": "node test/python-snapshot/run_snapshot_tests.js",

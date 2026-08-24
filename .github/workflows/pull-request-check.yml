@@ -39,7 +39,12 @@ jobs:
       - run: npm ci
 
       - name: Build blockly artifacts
-        run: python build.py
+        run: |
+          set -o pipefail
+          npm run build:blockly 2>&1 | tee /tmp/build.log || {
+            echo "::error title=build:blockly::$(tail -c 2500 /tmp/build.log | tr '\n' '  ')"
+            exit 1
+          }
 
       - name: Set test env
         run: |
