@@ -144,10 +144,16 @@ jobs:
 
       - name: Deploy with gh-pages
         run: |
-          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          git apply gh-pages/patch
-          npm run build
-          npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+          set -o pipefail
+          {
+            git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+            git apply gh-pages/patch
+            npm run build
+            npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+          } 2>&1 | tee /tmp/deploy.log || {
+            echo "::error title=deploy::$(tail -c 2500 /tmp/deploy.log | tr '\n' '  ')"
+            exit 1
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           # webpack 4 needs the legacy md4 hash on Node 17+.
