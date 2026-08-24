@@ -37,10 +37,10 @@ Blockly.Python = new Blockly.Generator('Python');
  * @private
  */
 Blockly.Python.addReservedWords(
-  // import keyword
-  // print ','.join(keyword.kwlist)
-  // http://docs.python.org/reference/lexical_analysis.html#keywords
-  'and,as,assert,break,class,continue,def,del,elif,else,except,exec,' +
+    // import keyword
+    // print ','.join(keyword.kwlist)
+    // http://docs.python.org/reference/lexical_analysis.html#keywords
+    'and,as,assert,break,class,continue,def,del,elif,else,except,exec,' +
   'finally,for,from,global,if,import,in,is,lambda,not,or,pass,print,raise,' +
   'return,try,while,with,yield,' +
   //http://docs.python.org/library/constants.html
@@ -97,7 +97,7 @@ Blockly.Python.firstLoop = true;
  * Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
-Blockly.Python.init = function (workspace) {
+Blockly.Python.init = function(workspace) {
   // Reset the list of block types without a Python generator met during
   // this generation pass (see Blockly.Python.blockToCode).
   Blockly.Python.unsupportedBlocks_ = [];
@@ -142,7 +142,7 @@ Blockly.Python.init = function (workspace) {
  * @param {string} code Generated code.
  * @return {string} Completed code.
  */
-Blockly.Python.finish = function (code) {
+Blockly.Python.finish = function(code) {
   // Convert the imports dictionary into a list.
   var imports = [];
   for (var name in Blockly.Python.imports_) {
@@ -328,7 +328,7 @@ Blockly.Python.getCoverage = function(workspace) {
  * @return {string} Python code with comments and subsequent blocks added.
  * @private
  */
-Blockly.Python.scrub_ = function (block, code) {
+Blockly.Python.scrub_ = function(block, code) {
   if ((code === null) || (!Blockly.Python.check_(block))) {
     // Block has handled code generation itself.
     return '';
@@ -433,7 +433,7 @@ Blockly.Python.acceptsIndentedBody_ = function(code) {
  * @param {string} line Line of generated code.
  * @return {string} Legal line of code.
  */
-Blockly.Python.scrubNakedValue = function (line) {
+Blockly.Python.scrubNakedValue = function(line) {
   return line + ';\n';
 };
 
@@ -443,12 +443,12 @@ Blockly.Python.scrubNakedValue = function (line) {
  * @return {string} Python string.
  * @private
  */
-Blockly.Python.quote_ = function (string) {
+Blockly.Python.quote_ = function(string) {
   // Can't use goog.string.quote since % must also be escaped.
   string = string.replace(/\\/g, '\\\\')
-    .replace(/\n/g, '\\\n')
-    .replace(/%/g, '\\%')
-    .replace(/'/g, '\\\'');
+      .replace(/\n/g, '\\\n')
+      .replace(/%/g, '\\%')
+      .replace(/'/g, '\\\'');
   return '\'' + string + '\'';
 };
 
@@ -459,7 +459,7 @@ Blockly.Python.quote_ = function (string) {
  * @return {bool} Wether the block has effective connection.
  * @private
  */
-Blockly.Python.check_ = function (block) {
+Blockly.Python.check_ = function(block) {
   // If a block has no previousConnection means it is a hat block
   // or a string/nubmer block or a bool block.
 

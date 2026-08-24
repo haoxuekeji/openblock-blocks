@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.esp32');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['microPython_pin_esp32SetPinMode'] = function (block) {
+Blockly.Python['microPython_pin_esp32SetPinMode'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
 
   var pin = block.getFieldValue('PIN') || '4';
@@ -49,7 +49,7 @@ Blockly.Python['microPython_pin_esp32SetPinMode'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_esp32SetDigitalOutput'] = function (block) {
+Blockly.Python['microPython_pin_esp32SetDigitalOutput'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
 
   var pin = block.getFieldValue('PIN') || '4';
@@ -64,12 +64,12 @@ Blockly.Python['microPython_pin_esp32SetDigitalOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_menu_level'] = function (block) {
+Blockly.Python['microPython_pin_menu_level'] = function(block) {
   var code = block.getFieldValue('level') || '0';
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_pin_esp32SetPwmOutput'] = function (block) {
+Blockly.Python['microPython_pin_esp32SetPwmOutput'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
 
@@ -82,7 +82,7 @@ Blockly.Python['microPython_pin_esp32SetPwmOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_esp32SetDACOutput'] = function (block) {
+Blockly.Python['microPython_pin_esp32SetDACOutput'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_dac'] = 'from machine import DAC';
 
@@ -95,7 +95,7 @@ Blockly.Python['microPython_pin_esp32SetDACOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_esp32ReadDigitalPin'] = function (block) {
+Blockly.Python['microPython_pin_esp32ReadDigitalPin'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
 
   var pin = block.getFieldValue('PIN') || '4';
@@ -109,7 +109,7 @@ Blockly.Python['microPython_pin_esp32ReadDigitalPin'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_pin_esp32ReadAnalogPin'] = function (block) {
+Blockly.Python['microPython_pin_esp32ReadAnalogPin'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_adc'] = 'from machine import ADC';
 
@@ -122,7 +122,7 @@ Blockly.Python['microPython_pin_esp32ReadAnalogPin'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_pin_esp32ReadTouchPin'] = function (block) {
+Blockly.Python['microPython_pin_esp32ReadTouchPin'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_touchpad'] = 'from machine import TouchPad';
 
@@ -148,7 +148,7 @@ var esp32ServoHelper =
   '    if pin in _ob_servos:\n' +
   '        _ob_servos.pop(pin).deinit()\n';
 
-Blockly.Python['microPython_pin_setServoOutput'] = function (block) {
+Blockly.Python['microPython_pin_setServoOutput'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
 
@@ -161,7 +161,7 @@ Blockly.Python['microPython_pin_setServoOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_servoRelease'] = function (block) {
+Blockly.Python['microPython_pin_servoRelease'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
 
@@ -173,7 +173,7 @@ Blockly.Python['microPython_pin_servoRelease'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_console_consolePrint'] = function (block) {
+Blockly.Python['microPython_console_consolePrint'] = function(block) {
   var text = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '\'\'';
   var eol = block.getFieldValue('EOL') || 'warp';
 
@@ -186,14 +186,14 @@ Blockly.Python['microPython_console_consolePrint'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_console_consoleInput'] = function (block) {
+Blockly.Python['microPython_console_consoleInput'] = function(block) {
   var text = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '\'\'';
 
   var code = 'input(' + text + ')';
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_console_esp32SetBleName'] = function (block) {
+Blockly.Python['microPython_console_esp32SetBleName'] = function(block) {
   var name = Blockly.Python.valueToCode(block, 'NAME', Blockly.Python.ORDER_FUNCTION_CALL) || '\'\'';
   Blockly.Python.imports_['obble'] = 'import obble';
 
@@ -201,7 +201,7 @@ Blockly.Python['microPython_console_esp32SetBleName'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_neopixel_neopixelInit'] = function (block) {
+Blockly.Python['microPython_neopixel_neopixelInit'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['neopixel'] = 'import neopixel';
 
@@ -212,7 +212,7 @@ Blockly.Python['microPython_neopixel_neopixelInit'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_neopixel_neopixelSetColor'] = function (block) {
+Blockly.Python['microPython_neopixel_neopixelSetColor'] = function(block) {
   var index = Blockly.Python.valueToCode(block, 'INDEX', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var r = Blockly.Python.valueToCode(block, 'R', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var g = Blockly.Python.valueToCode(block, 'G', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
@@ -225,7 +225,7 @@ Blockly.Python['microPython_neopixel_neopixelSetColor'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_neopixel_neopixelFill'] = function (block) {
+Blockly.Python['microPython_neopixel_neopixelFill'] = function(block) {
   var r = Blockly.Python.valueToCode(block, 'R', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var g = Blockly.Python.valueToCode(block, 'G', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
   var b = Blockly.Python.valueToCode(block, 'B', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
@@ -237,7 +237,7 @@ Blockly.Python['microPython_neopixel_neopixelFill'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_neopixel_neopixelSetBrightness'] = function (block) {
+Blockly.Python['microPython_neopixel_neopixelSetBrightness'] = function(block) {
   var brt = Blockly.Python.valueToCode(block, 'BRT', Blockly.Python.ORDER_FUNCTION_CALL) || '100';
 
   Blockly.Python.setups_['neopixel_brt'] = '_ob_np_brt = 1.0';
@@ -246,15 +246,15 @@ Blockly.Python['microPython_neopixel_neopixelSetBrightness'] = function (block) 
   return code;
 };
 
-Blockly.Python['microPython_neopixel_neopixelShow'] = function () {
+Blockly.Python['microPython_neopixel_neopixelShow'] = function() {
   return '_ob_np.write()\n';
 };
 
-Blockly.Python['microPython_neopixel_neopixelClear'] = function () {
+Blockly.Python['microPython_neopixel_neopixelClear'] = function() {
   return '_ob_np.fill((0, 0, 0))\n_ob_np.write()\n';
 };
 
-Blockly.Python['microPython_sensor_sensorDhtRead'] = function (block) {
+Blockly.Python['microPython_sensor_sensorDhtRead'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['dht'] = 'import dht';
 
@@ -275,7 +275,7 @@ Blockly.Python['microPython_sensor_sensorDhtRead'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_sensor_sensorUltrasonicDistance'] = function (block) {
+Blockly.Python['microPython_sensor_sensorUltrasonicDistance'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['time'] = 'import time';
   Blockly.Python.imports_['machine'] = 'import machine';
@@ -299,7 +299,7 @@ Blockly.Python['microPython_sensor_sensorUltrasonicDistance'] = function (block)
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_sensor_sensorInternalTemperature'] = function () {
+Blockly.Python['microPython_sensor_sensorInternalTemperature'] = function() {
   Blockly.Python.imports_['esp32'] = 'import esp32';
 
   // Newer chips (c3/s3) expose mcu_temperature() in celsius, the classic
@@ -314,7 +314,7 @@ Blockly.Python['microPython_sensor_sensorInternalTemperature'] = function () {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_sensor_sensorDs18b20Read'] = function (block) {
+Blockly.Python['microPython_sensor_sensorDs18b20Read'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['time'] = 'import time';
   Blockly.Python.imports_['onewire'] = 'import onewire';
@@ -340,7 +340,7 @@ Blockly.Python['microPython_sensor_sensorDs18b20Read'] = function (block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_wifi_wifiConnect'] = function (block) {
+Blockly.Python['microPython_wifi_wifiConnect'] = function(block) {
   Blockly.Python.imports_['network'] = 'import network';
   Blockly.Python.imports_['time'] = 'import time';
 
@@ -359,7 +359,7 @@ Blockly.Python['microPython_wifi_wifiConnect'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_wifi_wifiIsConnected'] = function () {
+Blockly.Python['microPython_wifi_wifiIsConnected'] = function() {
   Blockly.Python.imports_['network'] = 'import network';
 
   Blockly.Python.setups_['wifi_wlan'] = '_ob_wlan = network.WLAN(network.STA_IF)\n_ob_wlan.active(True)';
@@ -368,7 +368,7 @@ Blockly.Python['microPython_wifi_wifiIsConnected'] = function () {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_wifi_wifiGetIp'] = function () {
+Blockly.Python['microPython_wifi_wifiGetIp'] = function() {
   Blockly.Python.imports_['network'] = 'import network';
 
   Blockly.Python.setups_['wifi_wlan'] = '_ob_wlan = network.WLAN(network.STA_IF)\n_ob_wlan.active(True)';
@@ -377,14 +377,14 @@ Blockly.Python['microPython_wifi_wifiGetIp'] = function () {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_system_systemRunningTime'] = function () {
+Blockly.Python['microPython_system_systemRunningTime'] = function() {
   Blockly.Python.imports_['time'] = 'import time';
 
   var code = 'time.ticks_ms()';
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_system_systemDelayMs'] = function (block) {
+Blockly.Python['microPython_system_systemDelayMs'] = function(block) {
   Blockly.Python.imports_['time'] = 'import time';
 
   var time = Blockly.Python.valueToCode(block, 'TIME', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
@@ -393,7 +393,7 @@ Blockly.Python['microPython_system_systemDelayMs'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_esp32PlayTone'] = function (block) {
+Blockly.Python['microPython_pin_esp32PlayTone'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
 
@@ -406,7 +406,7 @@ Blockly.Python['microPython_pin_esp32PlayTone'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_pin_esp32StopTone'] = function (block) {
+Blockly.Python['microPython_pin_esp32StopTone'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
   Blockly.Python.imports_['machine_pwm'] = 'from machine import PWM';
 
@@ -418,7 +418,7 @@ Blockly.Python['microPython_pin_esp32StopTone'] = function (block) {
   return code;
 };
 
-Blockly.Python['microPython_wifi_wifiDisconnect'] = function () {
+Blockly.Python['microPython_wifi_wifiDisconnect'] = function() {
   Blockly.Python.imports_['network'] = 'import network';
 
   Blockly.Python.setups_['wifi_wlan'] = '_ob_wlan = network.WLAN(network.STA_IF)\n_ob_wlan.active(True)';
@@ -427,7 +427,7 @@ Blockly.Python['microPython_wifi_wifiDisconnect'] = function () {
   return code;
 };
 
-Blockly.Python['microPython_wifi_wifiRssi'] = function () {
+Blockly.Python['microPython_wifi_wifiRssi'] = function() {
   Blockly.Python.imports_['network'] = 'import network';
 
   Blockly.Python.setups_['wifi_wlan'] = '_ob_wlan = network.WLAN(network.STA_IF)\n_ob_wlan.active(True)';
@@ -442,7 +442,7 @@ Blockly.Python['microPython_wifi_wifiRssi'] = function () {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_system_systemRestart'] = function () {
+Blockly.Python['microPython_system_systemRestart'] = function() {
   Blockly.Python.imports_['machine'] = 'import machine';
 
   var code = 'machine.reset()\n';

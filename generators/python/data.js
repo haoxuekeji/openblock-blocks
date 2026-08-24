@@ -23,15 +23,15 @@ goog.provide('Blockly.Python.data');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['data_variable'] = function (block) {
+Blockly.Python['data_variable'] = function(block) {
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
-    Blockly.Variables.NAME_TYPE);
+      Blockly.Variables.NAME_TYPE);
   return [varName, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['data_setvariableto'] = function (block) {
+Blockly.Python['data_setvariableto'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
-    Blockly.Python.ORDER_ADDITIVE) || '0';
+      Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
       Blockly.Variables.NAME_TYPE);
   if (varName === 'unnamed') {
@@ -45,9 +45,9 @@ Blockly.Python['data_setvariableto'] = function (block) {
   return varName + ' = ' + arg0 + '\n';
 };
 
-Blockly.Python['data_changevariableby'] = function (block) {
+Blockly.Python['data_changevariableby'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE',
-    Blockly.Python.ORDER_ADDITIVE) || '0';
+      Blockly.Python.ORDER_ADDITIVE) || '0';
   var varName = Blockly.Python.variableDB_.getName(block.getFieldValue('VARIABLE'),
       Blockly.Variables.NAME_TYPE);
   if (varName === 'unnamed') {
@@ -57,11 +57,11 @@ Blockly.Python['data_changevariableby'] = function (block) {
   return varName + ' += ' + arg0 + '\n';
 };
 
-Blockly.Python['data_showvariable'] = function () {
+Blockly.Python['data_showvariable'] = function() {
   return '';
 };
 
-Blockly.Python['data_hidevariable'] = function () {
+Blockly.Python['data_hidevariable'] = function() {
   return '';
 };
 
@@ -163,11 +163,11 @@ Blockly.Python['data_listcontainsitem'] = function(block) {
   return ['' + item + ' in ' + varName, Blockly.Python.ORDER_RELATIONAL];
 };
 
-Blockly.Python['data_showlist'] = function () {
+Blockly.Python['data_showlist'] = function() {
   return '';
 };
 
-Blockly.Python['data_hidelist'] = function () {
+Blockly.Python['data_hidelist'] = function() {
   return '';
 };
 

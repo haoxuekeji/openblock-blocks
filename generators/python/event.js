@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.event');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['event_whenmicrobitbegin'] = function (block) {
+Blockly.Python['event_whenmicrobitbegin'] = function(block) {
   Blockly.Python.imports_["microbit"] = "from microbit import *";
 
   var code = "";
@@ -35,7 +35,7 @@ Blockly.Python['event_whenmicrobitbegin'] = function (block) {
   return code;
 };
 
-Blockly.Python['event_whenmicropythonbegin'] = function (block) {
+Blockly.Python['event_whenmicropythonbegin'] = function(block) {
   var code = "";
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
   if (!nextBlock) {
@@ -45,7 +45,7 @@ Blockly.Python['event_whenmicropythonbegin'] = function (block) {
   return code;
 };
 
-Blockly.Python['event_whenmicrobitbuttonpressed'] = function (block) {
+Blockly.Python['event_whenmicrobitbuttonpressed'] = function(block) {
   Blockly.Python.imports_["microbit"] = "from microbit import *";
 
   var key = block.getFieldValue('KEY_OPTION');
@@ -83,7 +83,7 @@ Blockly.Python['event_whenmicrobitbuttonpressed'] = function (block) {
   return null;
 };
 
-Blockly.Python['event_whenmicrobitpinbeingtouched'] = function (block) {
+Blockly.Python['event_whenmicrobitpinbeingtouched'] = function(block) {
   Blockly.Python.imports_["microbit"] = "from microbit import *";
 
   var pin = block.getFieldValue('PIN_OPTION');
@@ -120,7 +120,7 @@ Blockly.Python['event_whenmicrobitpinbeingtouched'] = function (block) {
   return null;
 };
 
-Blockly.Python['event_whenmicrobitgesture'] = function (block) {
+Blockly.Python['event_whenmicrobitgesture'] = function(block) {
   Blockly.Python.imports_["microbit"] = "from microbit import *";
 
   var sta = block.getFieldValue('GESTURE_OPTION');

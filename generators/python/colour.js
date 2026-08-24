@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.colour');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['colour_picker'] = function (block) {
+Blockly.Python['colour_picker'] = function(block) {
   // Numeric value.
   var code = block.getFieldValue('COLOUR');
   return [code, Blockly.Python.ORDER_ATOMIC];

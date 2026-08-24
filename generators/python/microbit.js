@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.microbit');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['microbit_pin_setDigitalOutput'] = function (block) {
+Blockly.Python['microbit_pin_setDigitalOutput'] = function(block) {
   var pin = block.getFieldValue('PIN');
   var level = Blockly.Python.valueToCode(block, 'LEVEL', Blockly.Python.ORDER_FUNCTION_CALL) || 'LOW';
 
@@ -31,12 +31,12 @@ Blockly.Python['microbit_pin_setDigitalOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microbit_pin_menu_level'] = function (block) {
+Blockly.Python['microbit_pin_menu_level'] = function(block) {
   var code = block.getFieldValue('level') || '0';
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_pin_setPwmOutput'] = function (block) {
+Blockly.Python['microbit_pin_setPwmOutput'] = function(block) {
   var pin = block.getFieldValue('PIN');
   var out = Blockly.Python.valueToCode(block, 'OUT', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
 
@@ -44,25 +44,25 @@ Blockly.Python['microbit_pin_setPwmOutput'] = function (block) {
   return code;
 };
 
-Blockly.Python['microbit_pin_readDigitalPin'] = function (block) {
+Blockly.Python['microbit_pin_readDigitalPin'] = function(block) {
   var pin = block.getFieldValue('PIN') || '0';
   var code = "pin" + pin + ".read_digital()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_pin_readAnalogPin'] = function (block) {
+Blockly.Python['microbit_pin_readAnalogPin'] = function(block) {
   var pin = block.getFieldValue('PIN') || '0';
   var code = "pin" + pin + ".read_analog()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_pin_pinTouched'] = function (block) {
+Blockly.Python['microbit_pin_pinTouched'] = function(block) {
   var pin = block.getFieldValue('PIN') || '0';
   var code = "pin" + pin + ".is_touched()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_display_showImage'] = function (block) {
+Blockly.Python['microbit_display_showImage'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_ATOMIC) || '0';
 
   arg0 = arg0.replace(/1/g, '9');
@@ -72,7 +72,7 @@ Blockly.Python['microbit_display_showImage'] = function (block) {
   return code;
 };
 
-Blockly.Python['microbit_display_showImageUntil'] = function (block) {
+Blockly.Python['microbit_display_showImageUntil'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_ATOMIC) || '0';
   var arg1 = Blockly.Python.valueToCode(block, 'TIME', Blockly.Python.ORDER_ATOMIC) || '0';
 
@@ -83,24 +83,24 @@ Blockly.Python['microbit_display_showImageUntil'] = function (block) {
   return code;
 };
 
-Blockly.Python['microbit_display_show'] = function (block) {
+Blockly.Python['microbit_display_show'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
   var code = "display.scroll(str(" + arg0 + "), wait=False, loop=False)\n";
   return code;
 };
 
-Blockly.Python['microbit_display_showUntilScrollDone'] = function (block) {
+Blockly.Python['microbit_display_showUntilScrollDone'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
   var code = "display.scroll(str(" + arg0 + "), wait=True, loop=False)\n";
   return code;
 };
 
-Blockly.Python['microbit_display_clearDisplay'] = function () {
+Blockly.Python['microbit_display_clearDisplay'] = function() {
   var code = "display.clear()\n";
   return code;
 };
 
-Blockly.Python['microbit_display_lightPixelAt'] = function (block) {
+Blockly.Python['microbit_display_lightPixelAt'] = function(block) {
   var sta = block.getFieldValue('STATE');
   var x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_FUNCTION_CALL) || '';
   var y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_FUNCTION_CALL) || '';
@@ -129,76 +129,76 @@ Blockly.Python['microbit_display_menu_ledBrightness'] = function(block) {
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_buttonIsPressed'] = function (block) {
+Blockly.Python['microbit_sensor_buttonIsPressed'] = function(block) {
   var key = block.getFieldValue('KEY');
 
   var code = "button_" + key + ".is_pressed()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_gestureIsX'] = function (block) {
+Blockly.Python['microbit_sensor_gestureIsX'] = function(block) {
   var sta = block.getFieldValue('STA');
 
   var code = "accelerometer.is_gesture('" + sta + "')";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_axisAcceleration'] = function (block) {
+Blockly.Python['microbit_sensor_axisAcceleration'] = function(block) {
   var axis = block.getFieldValue('AXIS');
 
   var code = "accelerometer.get_" + axis + "()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_compassAngle'] = function () {
+Blockly.Python['microbit_sensor_compassAngle'] = function() {
   var code = "compass.heading()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_compassMagneticDensity'] = function () {
+Blockly.Python['microbit_sensor_compassMagneticDensity'] = function() {
   var code = "compass.get_field_strength()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_calibrateCompass'] = function () {
+Blockly.Python['microbit_sensor_calibrateCompass'] = function() {
   var code = "compass.calibrate()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_lightLevel'] = function () {
+Blockly.Python['microbit_sensor_lightLevel'] = function() {
   var code = "display.read_light_level()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_temperature'] = function () {
+Blockly.Python['microbit_sensor_temperature'] = function() {
   var code = "temperature()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_sensor_runningTime'] = function () {
+Blockly.Python['microbit_sensor_runningTime'] = function() {
   var code = "running_time()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_wireless_openWirelessCommunication'] = function () {
+Blockly.Python['microbit_wireless_openWirelessCommunication'] = function() {
   Blockly.Python.imports_["radio"] = "import radio";
   var code = "radio.on()\n";
   return code;
 };
 
-Blockly.Python['microbit_wireless_closeWirelessCommunication'] = function () {
+Blockly.Python['microbit_wireless_closeWirelessCommunication'] = function() {
   Blockly.Python.imports_["radio"] = "import radio";
   var code = "radio.off()\n";
   return code;
 };
 
-Blockly.Python['microbit_wireless_resetWirelessCommunication'] = function () {
+Blockly.Python['microbit_wireless_resetWirelessCommunication'] = function() {
   Blockly.Python.imports_["radio"] = "import radio";
   var code = "radio.reset()\n";
   return code;
 };
 
-Blockly.Python['microbit_wireless_sendWirelessMessage'] = function (block) {
+Blockly.Python['microbit_wireless_sendWirelessMessage'] = function(block) {
   Blockly.Python.imports_["radio"] = "import radio";
 
   var msg = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
@@ -206,13 +206,13 @@ Blockly.Python['microbit_wireless_sendWirelessMessage'] = function (block) {
   return code;
 };
 
-Blockly.Python['microbit_wireless_receiveWirelessMessage'] = function () {
+Blockly.Python['microbit_wireless_receiveWirelessMessage'] = function() {
   Blockly.Python.imports_["radio"] = "import radio";
   var code = "radio.receive()";
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microbit_wireless_setWirelessCommunicationChannel'] = function (block) {
+Blockly.Python['microbit_wireless_setWirelessCommunicationChannel'] = function(block) {
   Blockly.Python.imports_["radio"] = "import radio";
 
   var ch = block.getFieldValue('CH');
@@ -220,7 +220,7 @@ Blockly.Python['microbit_wireless_setWirelessCommunicationChannel'] = function (
   return code;
 };
 
-Blockly.Python['microbit_console_consolePrint'] = function (block) {
+Blockly.Python['microbit_console_consolePrint'] = function(block) {
   var msg = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
   var code = "print(" + msg + ")\n";
   return code;

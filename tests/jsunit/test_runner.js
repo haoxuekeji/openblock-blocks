@@ -4,7 +4,8 @@ var chrome = require('selenium-webdriver/chrome');
 var builder = new webdriver.Builder().forBrowser('chrome');
 
 if (process.env.CI) {
-  const options = new chrome.Options().headless();
+  // selenium-webdriver >= 4.17 removed Options.headless().
+  const options = new chrome.Options().addArguments('--headless=new');
   if (process.platform === 'linux') {
     options.addArguments('no-sandbox');
   }

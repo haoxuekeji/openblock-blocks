@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.math');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['math_number'] = function (block) {
+Blockly.Python['math_number'] = function(block) {
   // Numeric value.
   var code = parseFloat(block.getFieldValue('NUM'));
   if (isNaN(code)) {

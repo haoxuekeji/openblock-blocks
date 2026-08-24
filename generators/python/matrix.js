@@ -23,7 +23,7 @@ goog.provide('Blockly.Python.matrix');
 goog.require('Blockly.Python');
 
 
-Blockly.Python['matrix'] = function (block) {
+Blockly.Python['matrix'] = function(block) {
   // Numeric value.
   var code = block.getFieldValue('MATRIX');
   if (isNaN(code)) {

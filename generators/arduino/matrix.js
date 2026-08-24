@@ -23,7 +23,7 @@ goog.provide('Blockly.Arduino.matrix');
 goog.require('Blockly.Arduino');
 
 
-Blockly.Arduino['matrix'] = function (block) {
+Blockly.Arduino['matrix'] = function(block) {
   // Numeric value.
   var code = block.getFieldValue('MATRIX');
   if (isNaN(code)) {
