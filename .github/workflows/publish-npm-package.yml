@@ -176,8 +176,12 @@ jobs:
 
       # Publishing is skipped until an NPM_TOKEN secret is configured;
       # releases are done manually with npm publish in the meantime.
+      # npm publish triggers the prepack build, which needs the legacy
+      # OpenSSL provider for webpack 4 on Node 17+.
       - uses: JS-DevTools/npm-publish@v1
         if: env.NPM_TOKEN != ''
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
         with:
           token: ${{ secrets.NPM_TOKEN }}
 
