@@ -95,6 +95,8 @@ jobs:
   publish:
     needs: check
     runs-on: ubuntu-22.04
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -143,6 +145,8 @@ jobs:
         run: npm --no-git-tag-version version $RELEASE_VERSION
 
       - name: Tag release
+        # Only tag when the version will actually reach npm.
+        if: env.NPM_TOKEN != ''
         run: |
           git tag $RELEASE_VERSION
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY $RELEASE_VERSION
@@ -170,7 +174,10 @@ jobs:
           # webpack 4 needs the legacy md4 hash on Node 17+.
           NODE_OPTIONS: --openssl-legacy-provider
 
+      # Publishing is skipped until an NPM_TOKEN secret is configured;
+      # releases are done manually with npm publish in the meantime.
       - uses: JS-DevTools/npm-publish@v1
+        if: env.NPM_TOKEN != ''
         with:
           token: ${{ secrets.NPM_TOKEN }}
 
