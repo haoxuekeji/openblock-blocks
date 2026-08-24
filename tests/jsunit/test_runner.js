@@ -36,19 +36,24 @@ var testHtml = function (htmlString) {
 
 var path = process.cwd();
 
+// The closure TestRunner renders #closureTestRunnerLog only after the whole
+// suite has finished, so wait for it instead of a fixed sleep (slow CI
+// runners need well over 5 seconds).
+var LOG_TIMEOUT_MS = 120000;
+
 var runTests = async function () {
   try {
     var element, text;
 
     await browser.get("file://" + path + "/tests/jsunit/vertical_tests.html");
-    await browser.sleep(5000);
-    element = await browser.findElement({id: "closureTestRunnerLog"});
+    element = await browser.wait(
+      webdriver.until.elementLocated({id: "closureTestRunnerLog"}), LOG_TIMEOUT_MS);
     text = await element.getText();
     testHtml(text);
 
     await browser.get("file://" + path + "/tests/jsunit/horizontal_tests.html");
-    await browser.sleep(5000);
-    element = await browser.findElement({id: "closureTestRunnerLog"});
+    element = await browser.wait(
+      webdriver.until.elementLocated({id: "closureTestRunnerLog"}), LOG_TIMEOUT_MS);
     text = await element.getText();
     testHtml(text);
   }
