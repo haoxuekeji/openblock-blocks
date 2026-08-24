@@ -65,7 +65,7 @@ jobs:
         run: |
           set -o pipefail
           npm run test:unit 2>&1 | tee /tmp/unit.log || {
-            echo "::error title=test:unit::$(tail -c 700 /tmp/unit.log | tr '\n' '  ')"
+            echo "::error title=test:unit::$(tail -c 2500 /tmp/unit.log | tr '\n' '  ')"
             exit 1
           }
 

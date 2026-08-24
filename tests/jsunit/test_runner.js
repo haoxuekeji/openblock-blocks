@@ -1,13 +1,18 @@
 require('chromedriver');
 var webdriver = require('selenium-webdriver');
 var chrome = require('selenium-webdriver/chrome');
+var logging = require('selenium-webdriver/lib/logging');
 var builder = new webdriver.Builder().forBrowser('chrome');
+
+var loggingPrefs = new logging.Preferences();
+loggingPrefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);
 
 if (process.env.CI) {
   // selenium-webdriver >= 4.17 removed Options.headless().
   // --disable-dev-shm-usage: CI runners mount a tiny /dev/shm which can
   // crash the renderer on large pages like the jsunit suites.
   const options = new chrome.Options().addArguments('--headless=new', '--disable-dev-shm-usage');
+  options.setLoggingPrefs(loggingPrefs);
   if (process.platform === 'linux') {
     options.addArguments('no-sandbox');
   }
@@ -41,6 +46,22 @@ var path = process.cwd();
 // runners need well over 5 seconds).
 var LOG_TIMEOUT_MS = 120000;
 
+// On failure, dump page state and browser console to stderr for CI logs.
+var dumpDiagnostics = async function () {
+  try {
+    var state = await browser.executeScript(
+      'return document.readyState + " | title: " + document.title + " | body: " + ' +
+      '(document.body ? document.body.innerText.slice(0, 600) : "(no body)")');
+    console.error('PAGE STATE:', state);
+    var entries = await browser.manage().logs().get('browser');
+    entries.slice(-15).forEach(function (entry) {
+      console.error('CONSOLE [' + entry.level.name + ']', entry.message.slice(0, 300));
+    });
+  } catch (diagErr) {
+    console.error('diagnostics failed:', diagErr.message);
+  }
+};
+
 var runTests = async function () {
   try {
     var element, text;
@@ -56,6 +77,10 @@ var runTests = async function () {
       webdriver.until.elementLocated({id: "closureTestRunnerLog"}), LOG_TIMEOUT_MS);
     text = await element.getText();
     testHtml(text);
+  }
+  catch (e) {
+    await dumpDiagnostics();
+    throw e;
   }
   finally {
     await browser.quit();
