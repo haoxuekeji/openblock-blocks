@@ -146,18 +146,22 @@ jobs:
         run: |
           set -o pipefail
           {
-            # The token is only accepted with the x-access-token username
-            # (same as the tag push above); "git:" basic auth is rejected.
-            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+            # Drop the read-only credential header injected by actions/checkout
+            # so git relies on the URL credentials below (the same
+            # x-access-token form the tag push uses successfully).
+            git config --unset-all http.https://github.com/.extraheader || true
+            git remote set-url origin "$REPO_URL"
+            git config --get remote.origin.url | sed 's/:[^@/]*@/:***@/'
             git apply gh-pages/patch
             npm run build
-            npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+            npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "$REPO_URL"
           } 2>&1 | tee /tmp/deploy.log || {
             echo "::error title=deploy::$(tail -c 2500 /tmp/deploy.log | tr '\n' '  ')"
             exit 1
           }
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPO_URL: https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
           # webpack 4 needs the legacy md4 hash on Node 17+.
           NODE_OPTIONS: --openssl-legacy-provider
 
