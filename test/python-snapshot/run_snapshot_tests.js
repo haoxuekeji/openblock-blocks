@@ -112,7 +112,8 @@ const extensionsDir = path.join(repoRoot, '..', 'external-resources-v3', 'extens
 const optionalExtensions = [
     {id: 'espEspNow', probe: 'espEspNow_whenMessage', fixture: 's10_espnow_async.xml'},
     {id: 'espBme280', probe: 'espBme280_temperature', fixture: 's11_bme280_read.xml'},
-    {id: 'espEvents', probe: 'espEvents_whenButton', fixture: 's12_events_hats.xml'}
+    {id: 'espEvents', probe: 'espEvents_whenButton', fixture: 's12_events_hats.xml'},
+    {id: 'espWebRemote', probe: 'espWebRemote_whenButton', fixture: 's13_webremote.xml'}
 ];
 // Extension modules are CommonJS-ish (`exports = registerFn`). Run each in a
 // sandbox that returns the assigned export, then register it against the same
@@ -315,6 +316,37 @@ const extraAssertions = {
             result.code);
         check(fixture, 'all three watchers gathered under one asyncio entry point',
             result.code.includes('await asyncio.gather(_ob_btnwatch1(), _ob_touchwatch2(), _ob_every3())') &&
+            result.code.includes('asyncio.run(_ob_main())'),
+            result.code);
+    },
+    s13_webremote: (fixture, result) => {
+        // The web dashboard couples all the async plumbing: the begin stack
+        // starts the server, the HTTP listener is polled from the repeat()
+        // hook (wrapped into _ob_repeat_task), and the web button hat spawns
+        // a watcher like every other event hat.
+        check(fixture, 'extension registered its hat in MICROPYTHON_EVENT_HATS',
+            ScratchBlocks.Python.MICROPYTHON_EVENT_HATS.indexOf('espWebRemote_whenButton') !== -1);
+        check(fixture, 'begin stack starts the hotspot and the server',
+            result.code.includes(`_ob_web.start_ap(str('OpenBlock'), str('12345678'))`) &&
+            result.code.includes('_ob_web.start()'),
+            result.code);
+        check(fixture, 'dashboard widgets registered during setup',
+            result.code.includes(`_ob_web.add_slider('S1')`) &&
+            result.code.includes(`_ob_web.add_button('A')`),
+            result.code);
+        check(fixture, 'HTTP requests answered from the repeat() polling hook',
+            /def repeat\(\):\n\s+_ob_web\.poll\(\)/.test(result.code),
+            result.code);
+        check(fixture, 'slider value flows into the web label',
+            result.code.includes(`_ob_web.set_label('L1', str((_ob_web.slider('S1'))))`),
+            result.code);
+        check(fixture, 'web button hat becomes an async handler + watcher',
+            result.code.includes('async def _ob_on_webbtnA_2():') &&
+            result.code.includes(`if _ob_web.pressed('A'):`) &&
+            result.code.includes('await _ob_on_webbtnA_2()'),
+            result.code);
+        check(fixture, 'begin task, button watcher and poll task all gathered',
+            result.code.includes('await asyncio.gather(_ob_task1(), _ob_webbtnwatch2(), _ob_repeat_task())') &&
             result.code.includes('asyncio.run(_ob_main())'),
             result.code);
     }

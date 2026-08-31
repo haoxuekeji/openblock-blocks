@@ -1,0 +1,39 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables><variable type="" id="varTaps">taps</variable></variables>
+  <block type="event_whenmicropythonbegin" id="begin1" x="10" y="10">
+    <next>
+      <block type="espWebRemote_startAp" id="start1">
+        <value name="SSID"><shadow type="text"><field name="TEXT">OpenBlock</field></shadow></value>
+        <value name="PWD"><shadow type="text"><field name="TEXT">12345678</field></shadow></value>
+        <next>
+          <block type="control_forever" id="fv1">
+            <statement name="SUBSTACK">
+              <block type="espWebRemote_setLabel" id="lbl1">
+                <value name="TEXT">
+                  <block type="espWebRemote_slider" id="sl1">
+                    <field name="SLIDER">S1</field>
+                  </block>
+                </value>
+                <field name="LABEL">L1</field>
+                <next>
+                  <block type="control_wait" id="w1">
+                    <value name="DURATION"><shadow type="math_positive_number"><field name="NUM">1</field></shadow></value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="espWebRemote_whenButton" id="hat1" x="10" y="300">
+    <field name="BTN">A</field>
+    <next>
+      <block type="data_changevariableby" id="chg1">
+        <field name="VARIABLE" id="varTaps">taps</field>
+        <value name="VALUE"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+      </block>
+    </next>
+  </block>
+</xml>
