@@ -1,0 +1,39 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varHits">hits</variable>
+  </variables>
+  <block type="espEvents_whenButton" id="evb1" x="10" y="10">
+    <field name="PIN">0</field>
+    <next>
+      <block type="data_changevariableby" id="evb2">
+        <field name="VARIABLE" id="varHits">hits</field>
+        <value name="VALUE">
+          <shadow type="math_number"><field name="NUM">1</field></shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+  <block type="espEvents_whenTouch" id="evt1" x="10" y="150">
+    <field name="TOUCH">4</field>
+    <next>
+      <block type="control_wait" id="evt2">
+        <value name="DURATION">
+          <shadow type="math_positive_number"><field name="NUM">1</field></shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+  <block type="espEvents_everyNSeconds" id="eve1" x="10" y="290">
+    <value name="N">
+      <shadow type="math_positive_number"><field name="NUM">2</field></shadow>
+    </value>
+    <next>
+      <block type="data_changevariableby" id="eve2">
+        <field name="VARIABLE" id="varHits">hits</field>
+        <value name="VALUE">
+          <shadow type="math_number"><field name="NUM">1</field></shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>

@@ -111,7 +111,8 @@ ScratchBlocks.Blocks.microPython_pin_whenPinLevel = {
 const extensionsDir = path.join(repoRoot, '..', 'external-resources-v3', 'extensions');
 const optionalExtensions = [
     {id: 'espEspNow', probe: 'espEspNow_whenMessage', fixture: 's10_espnow_async.xml'},
-    {id: 'espBme280', probe: 'espBme280_temperature', fixture: 's11_bme280_read.xml'}
+    {id: 'espBme280', probe: 'espBme280_temperature', fixture: 's11_bme280_read.xml'},
+    {id: 'espEvents', probe: 'espEvents_whenButton', fixture: 's12_events_hats.xml'}
 ];
 // Extension modules are CommonJS-ish (`exports = registerFn`). Run each in a
 // sandbox that returns the assigned export, then register it against the same
@@ -291,6 +292,30 @@ const extraAssertions = {
             result.code.includes('_bme.humidity()') &&
             result.code.includes('_bme.pressure()') &&
             result.code.includes('_bme.altitude()'),
+            result.code);
+    },
+    s12_events_hats: (fixture, result) => {
+        // All three event hats register into the async engine and each spawns
+        // its own watcher task gathered under the shared entry point.
+        check(fixture, 'extension registered all three hats in MICROPYTHON_EVENT_HATS',
+            ['espEvents_whenButton', 'espEvents_whenTouch', 'espEvents_everyNSeconds']
+                .every(h => ScratchBlocks.Python.MICROPYTHON_EVENT_HATS.indexOf(h) !== -1));
+        check(fixture, 'button hat: pull-up setup + falling-edge watcher fires handler',
+            result.code.includes('p0.init(Pin.IN, Pin.PULL_UP)') &&
+            result.code.includes('if _now == 0 and _last != 0:') &&
+            result.code.includes('await _ob_on_btn0_1()'),
+            result.code);
+        check(fixture, 'touch hat: TouchPad setup + threshold watcher fires handler',
+            result.code.includes('_t4 = TouchPad(Pin(4))') &&
+            result.code.includes('if _v < 300 and not _touched:') &&
+            result.code.includes('await _ob_on_touch4_2()'),
+            result.code);
+        check(fixture, 'timer hat: periodic task sleeps then awaits handler',
+            /async def _ob_every3\(\):\n\s+while True:\n\s+await asyncio\.sleep\(2\)\n\s+await _ob_everybody3\(\)/.test(result.code),
+            result.code);
+        check(fixture, 'all three watchers gathered under one asyncio entry point',
+            result.code.includes('await asyncio.gather(_ob_btnwatch1(), _ob_touchwatch2(), _ob_every3())') &&
+            result.code.includes('asyncio.run(_ob_main())'),
             result.code);
     }
 };
