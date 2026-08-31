@@ -31,6 +31,12 @@ Blockly.Python['control_wait'] = function(block) {
   if (block.getRootBlock().type.indexOf('event_whenmicrobit') === 0) {
     return "sleep(" + arg0 + " * 1000" + ")\n";
   }
+  // Inside an asyncio task a blocking sleep would starve every other
+  // task, await the scheduler-friendly sleep instead.
+  if (Blockly.Python.isInAsyncTask(block)) {
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    return "await asyncio.sleep(" + arg0 + ")\n";
+  }
   Blockly.Python.imports_['time'] = 'import time';
   var code = "time.sleep(" + arg0 + ")\n";
   return code;
@@ -61,6 +67,12 @@ Blockly.Python['control_repeat'] = function(block) {
   } else {
     code += Blockly.Python.INDENT + "pass\n";
   }
+  // Yield once per iteration so sibling asyncio tasks stay scheduled even
+  // when the loop body contains no await of its own.
+  if (Blockly.Python.isInAsyncTask(block)) {
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    code += Blockly.Python.INDENT + "await asyncio.sleep_ms(0)\n";
+  }
   return code;
 };
 
@@ -70,6 +82,13 @@ Blockly.Python['control_forever'] = function(block) {
 
   var code = "while True:\n";
   code += branch;
+
+  // Asyncio task: yield each iteration so sibling tasks get scheduled.
+  if (Blockly.Python.isInAsyncTask(block)) {
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    code += Blockly.Python.INDENT + "await asyncio.sleep_ms(0)\n";
+    return code;
+  }
 
   var rootType = block.getRootBlock().type;
   if (rootType === 'event_whenmicrobitbegin' || rootType === 'event_whenmicropythonbegin') {
@@ -124,6 +143,11 @@ Blockly.Python['control_wait_until'] = function(block) {
   var code = "while not " + argument + ":\n";
   if (block.getRootBlock().type === 'event_whenmicrobitbegin') {
     code += Blockly.Python.INDENT + "repeat()\n";
+  } else if (Blockly.Python.isInAsyncTask(block)) {
+    // Poll cooperatively so sibling asyncio tasks keep running while
+    // this task waits for the condition.
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    code += Blockly.Python.INDENT + "await asyncio.sleep_ms(10)\n";
   } else {
     // A while loop with no body is an IndentationError, busy-wait instead.
     code += Blockly.Python.INDENT + "pass\n";
@@ -142,6 +166,10 @@ Blockly.Python['control_repeat_until'] = function(block) {
   code += branch;
   if (block.getRootBlock().type === 'event_whenmicrobitbegin') {
     code += Blockly.Python.INDENT + "repeat()\n";
+  } else if (Blockly.Python.isInAsyncTask(block)) {
+    // Yield once per iteration, mirroring control_forever in async mode.
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    code += Blockly.Python.INDENT + "await asyncio.sleep_ms(0)\n";
   }
   return code;
 };

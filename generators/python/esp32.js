@@ -23,6 +23,66 @@ goog.provide('Blockly.Python.esp32');
 goog.require('Blockly.Python');
 
 
+// "when pin becomes level" event hat. Only reachable in async mode (its
+// presence activates asyncMode_ in init): the user stack becomes an async
+// handler and a watcher task polls the pin for the wanted edge, so several
+// hats and begin stacks run concurrently.
+Blockly.Python['microPython_pin_whenPinLevel'] = function(block) {
+  Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
+  Blockly.Python.imports_['asyncio'] = 'import asyncio';
+
+  var pin = block.getFieldValue('PIN') || '4';
+  var level = block.getFieldValue('LEVEL') === '0' ? '0' : '1';
+  var ind = Blockly.Python.INDENT;
+
+  Blockly.Python.setups_['pin_' + pin] = 'p' + pin + ' = Pin(' + pin + ')';
+  if (!Blockly.Python.setups_['pin_mode_' + pin]) {
+    // Bias the idle level away from the watched edge so an unwired pin
+    // does not float and self-trigger. An explicit "set pin mode" block
+    // still overrides this at boot.
+    Blockly.Python.setups_['pin_mode_' + pin] = 'p' + pin +
+      '.init(Pin.IN, ' + (level === '1' ? 'Pin.PULL_DOWN' : 'Pin.PULL_UP') + ')';
+  }
+
+  Blockly.Python.asyncTaskCount_++;
+  var n = Blockly.Python.asyncTaskCount_;
+  var handlerName = '_ob_on_pin' + pin + '_' + n;
+  var watcherName = '_ob_watch' + n;
+
+  // The user stack lives in its own async handler (children are indented
+  // by scrub_, same pattern as the microbit event stacks).
+  var handlerCode = 'async def ' + handlerName + '():\n';
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  if (!nextBlock) {
+    handlerCode += ind + 'pass\n';
+  } else {
+    var variablesName = [];
+    for (var x in Blockly.Python.variables_) {
+      variablesName.push(
+        Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+    }
+    if (variablesName.length !== 0) {
+      handlerCode += ind + 'global ' + variablesName.join(', ') + '\n';
+    }
+    handlerCode = Blockly.Python.scrub_(block, handlerCode);
+  }
+  Blockly.Python.libraries_['async_handler_' + n] = handlerCode;
+
+  // Watcher task: edge detection by 20ms polling (debounces buttons).
+  // The handler is awaited inline, so one stack never runs re-entrantly.
+  Blockly.Python.libraries_['async_watcher_' + n] =
+    'async def ' + watcherName + '():\n' +
+    ind + '_ob_last = p' + pin + '.value()\n' +
+    ind + 'while True:\n' +
+    ind + ind + '_ob_now = p' + pin + '.value()\n' +
+    ind + ind + 'if _ob_now == ' + level + ' and _ob_last != ' + level + ':\n' +
+    ind + ind + ind + 'await ' + handlerName + '()\n' +
+    ind + ind + '_ob_last = _ob_now\n' +
+    ind + ind + 'await asyncio.sleep_ms(20)\n';
+  Blockly.Python.asyncTasks_.push(watcherName);
+  return null;
+};
+
 Blockly.Python['microPython_pin_esp32SetPinMode'] = function(block) {
   Blockly.Python.imports_['machine_pin'] = 'from machine import Pin';
 
@@ -385,9 +445,15 @@ Blockly.Python['microPython_system_systemRunningTime'] = function() {
 };
 
 Blockly.Python['microPython_system_systemDelayMs'] = function(block) {
-  Blockly.Python.imports_['time'] = 'import time';
-
   var time = Blockly.Python.valueToCode(block, 'TIME', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
+
+  // Inside an asyncio task the delay must not block the scheduler.
+  if (Blockly.Python.isInAsyncTask(block)) {
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+    return 'await asyncio.sleep_ms(int(' + time + '))\n';
+  }
+
+  Blockly.Python.imports_['time'] = 'import time';
 
   var code = 'time.sleep_ms(int(' + time + '))\n';
   return code;

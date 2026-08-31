@@ -1,0 +1,44 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varScore">score</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat9a" x="10" y="10">
+    <next>
+      <block type="control_forever" id="s9a1">
+        <statement name="SUBSTACK">
+          <block type="data_changevariableby" id="s9a2">
+            <field name="VARIABLE" id="varScore">score</field>
+            <value name="VALUE">
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="control_wait" id="s9a3">
+                <value name="DURATION">
+                  <shadow type="math_positive_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block type="microPython_pin_whenPinLevel" id="hat9b" x="10" y="300">
+    <field name="PIN">4</field>
+    <field name="LEVEL">1</field>
+    <next>
+      <block type="data_setvariableto" id="s9b1">
+        <field name="VARIABLE" id="varScore">score</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">0</field>
+          </shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>

@@ -1,0 +1,73 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varScore">score</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat8a" x="10" y="10">
+    <next>
+      <block type="data_setvariableto" id="s8a1">
+        <field name="VARIABLE" id="varScore">score</field>
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">0</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="control_forever" id="s8a2">
+            <statement name="SUBSTACK">
+              <block type="data_changevariableby" id="s8a3">
+                <field name="VARIABLE" id="varScore">score</field>
+                <value name="VALUE">
+                  <shadow type="math_number">
+                    <field name="NUM">1</field>
+                  </shadow>
+                </value>
+                <next>
+                  <block type="control_wait" id="s8a4">
+                    <value name="DURATION">
+                      <shadow type="math_positive_number">
+                        <field name="NUM">1</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="event_whenmicropythonbegin" id="hat8b" x="10" y="300">
+    <next>
+      <block type="control_wait_until" id="s8b1">
+        <value name="CONDITION">
+          <block type="operator_gt" id="s8b2">
+            <value name="OPERAND1">
+              <shadow type="text">
+                <field name="TEXT"></field>
+              </shadow>
+              <block type="data_variable" id="s8b3">
+                <field name="VARIABLE" id="varScore">score</field>
+              </block>
+            </value>
+            <value name="OPERAND2">
+              <shadow type="text">
+                <field name="TEXT">5</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="data_setvariableto" id="s8b4">
+            <field name="VARIABLE" id="varScore">score</field>
+            <value name="VALUE">
+              <shadow type="text">
+                <field name="TEXT">done</field>
+              </shadow>
+            </value>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

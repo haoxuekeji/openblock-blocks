@@ -1,0 +1,40 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="vT">temp</variable>
+    <variable type="" id="vH">humi</variable>
+    <variable type="" id="vP">pres</variable>
+    <variable type="" id="vA">alt</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="begin1" x="10" y="10">
+    <next>
+      <block type="espBme280_init" id="init1">
+        <field name="SDA">21</field>
+        <field name="SCL">22</field>
+        <next>
+          <block type="data_setvariableto" id="s1">
+            <field name="VARIABLE" id="vT">temp</field>
+            <value name="VALUE"><block type="espBme280_temperature" id="rT"></block></value>
+            <next>
+              <block type="data_setvariableto" id="s2">
+                <field name="VARIABLE" id="vH">humi</field>
+                <value name="VALUE"><block type="espBme280_humidity" id="rH"></block></value>
+                <next>
+                  <block type="data_setvariableto" id="s3">
+                    <field name="VARIABLE" id="vP">pres</field>
+                    <value name="VALUE"><block type="espBme280_pressure" id="rP"></block></value>
+                    <next>
+                      <block type="data_setvariableto" id="s4">
+                        <field name="VARIABLE" id="vA">alt</field>
+                        <value name="VALUE"><block type="espBme280_altitude" id="rA"></block></value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

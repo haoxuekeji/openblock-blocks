@@ -94,6 +94,41 @@ Blockly.Python.INDENT = '  ';
 Blockly.Python.firstLoop = true;
 
 /**
+ * Whether the current pass generates asyncio multi-task code for
+ * MicroPython boards. Activated in init() when the workspace holds more
+ * than one MicroPython begin stack, or at least one MicroPython event hat:
+ * a single sequential main.py cannot express concurrent stacks (the first
+ * `while True` starves every following stack), so each top stack becomes
+ * an `async def` task and blocking waits turn into awaits.
+ */
+Blockly.Python.asyncMode_ = false;
+
+/**
+ * MicroPython event hat block types. These blocks are registered
+ * dynamically by the VM device (extendedOpcode = deviceType_category_opcode)
+ * and each generates its own watcher task in async mode.
+ */
+Blockly.Python.MICROPYTHON_EVENT_HATS = [
+  'microPython_pin_whenPinLevel'
+];
+
+/**
+ * Whether a block lives inside an asyncio task stack: async mode is active
+ * and the block's root is a MicroPython begin hat or event hat. Used by
+ * wait/loop generators to emit awaitable sleeps and cooperative yields.
+ * @param {!Blockly.Block} block The block to check.
+ * @return {boolean} True when the surrounding stack runs as an asyncio task.
+ */
+Blockly.Python.isInAsyncTask = function(block) {
+  if (!Blockly.Python.asyncMode_) {
+    return false;
+  }
+  var rootType = block.getRootBlock().type;
+  return rootType === 'event_whenmicropythonbegin' ||
+      Blockly.Python.MICROPYTHON_EVENT_HATS.indexOf(rootType) !== -1;
+};
+
+/**
  * Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
@@ -101,6 +136,26 @@ Blockly.Python.init = function(workspace) {
   // Reset the list of block types without a Python generator met during
   // this generation pass (see Blockly.Python.blockToCode).
   Blockly.Python.unsupportedBlocks_ = [];
+  // Detect asyncio multi-task mode: several MicroPython begin stacks or
+  // any MicroPython event hat require concurrent tasks (see asyncMode_).
+  var topBlocks = workspace.getTopBlocks(false);
+  var beginStacks = 0;
+  var eventHats = 0;
+  for (var i = 0; i < topBlocks.length; i++) {
+    if (topBlocks[i].disabled) {
+      continue;
+    }
+    var topType = topBlocks[i].type;
+    if (topType === 'event_whenmicropythonbegin') {
+      beginStacks++;
+    } else if (Blockly.Python.MICROPYTHON_EVENT_HATS.indexOf(topType) !== -1) {
+      eventHats++;
+    }
+  }
+  Blockly.Python.asyncMode_ = eventHats > 0 || beginStacks > 1;
+  // Async task function names in creation order, consumed by finish().
+  Blockly.Python.asyncTasks_ = [];
+  Blockly.Python.asyncTaskCount_ = 0;
   // Create a dictionary of imports to be printed at head.
   Blockly.Python.imports_ = Object.create(null);
   // Create a dictionary of custom founction definitions to be printed after imports.
@@ -203,8 +258,32 @@ Blockly.Python.finish = function(code) {
 
   ret += code + "\n";
 
+  // Async mode: start every generated task under one asyncio entry point.
+  var asyncMain = Blockly.Python.asyncTasks_ && Blockly.Python.asyncTasks_.length !== 0;
+  if (asyncMain) {
+    var taskCalls = [];
+    for (var x = 0; x < Blockly.Python.asyncTasks_.length; x++) {
+      taskCalls.push(Blockly.Python.asyncTasks_[x] + '()');
+    }
+    // Legacy polling hooks (loops_) would land after the blocking
+    // asyncio.run() call and never execute, so run them as their own task.
+    if (loops.length !== 0) {
+      ret += "async def _ob_repeat_task():\n" +
+        Blockly.Python.INDENT + "while True:\n" +
+        Blockly.Python.INDENT + Blockly.Python.INDENT + "repeat()\n" +
+        Blockly.Python.INDENT + Blockly.Python.INDENT + "await asyncio.sleep_ms(10)\n\n";
+      taskCalls.push('_ob_repeat_task()');
+    }
+    ret += "async def _ob_main():\n" +
+      Blockly.Python.INDENT + "await asyncio.gather(" + taskCalls.join(', ') + ")\n\n" +
+      "asyncio.run(_ob_main())\n";
+  }
+
   // repeat
-  if (loops.length !== 0) {
+  if (asyncMain && loops.length !== 0) {
+    // The polling hooks already run inside _ob_repeat_task; async stacks
+    // never emit synchronous repeat() calls, so nothing to clean up here.
+  } else if (loops.length !== 0) {
     // if there is no loop add a empty loop function.
     if (Blockly.Python.firstLoop) {
       ret += "while True:\n" + Blockly.Python.INDENT + "repeat()\n\n";
@@ -236,6 +315,9 @@ Blockly.Python.finish = function(code) {
   delete Blockly.Python.customFunctions_;
   delete Blockly.Python.customFunctionsArgName_;
   delete Blockly.Python.unsupportedBlocks_;
+  delete Blockly.Python.asyncTasks_;
+  delete Blockly.Python.asyncTaskCount_;
+  Blockly.Python.asyncMode_ = false;
   Blockly.Python.variableDB_.reset();
   Blockly.Python.firstLoop = true;
 
@@ -362,9 +444,13 @@ Blockly.Python.scrub_ = function(block, code) {
   // 'event_whenmicropythonbegin' block.
   // mean's it is in a function or it is custom function, add indent
   // at start of every line.
+  // In async mode the micropython begin stack lives inside an `async def`
+  // task (like the microbit event stacks), so it does need the indent.
+  var topStackType = block.getTopStackBlock().type;
+  var isTopLevelStack = topStackType === 'event_whenmicrobitbegin' ||
+    (topStackType === 'event_whenmicropythonbegin' && !Blockly.Python.asyncMode_);
   if (block.getSurroundParent() === null && code !== "" && block.previousConnection !== null
-    && block.getTopStackBlock().type !== 'event_whenmicrobitbegin'
-    && block.getTopStackBlock().type !== 'event_whenmicropythonbegin') {
+    && !isTopLevelStack) {
     // Add indent at start except custom function
     if (block.type !== 'procedures_definition'
       && block.type !== 'procedures_prototype') {

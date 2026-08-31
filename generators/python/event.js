@@ -36,8 +36,38 @@ Blockly.Python['event_whenmicrobitbegin'] = function(block) {
 };
 
 Blockly.Python['event_whenmicropythonbegin'] = function(block) {
-  var code = "";
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+
+  // Async multi-task mode: every begin stack becomes one asyncio task so
+  // several stacks (and event hats) run concurrently like in Scratch.
+  // finish() emits the shared `asyncio.run(_ob_main())` entry point.
+  if (Blockly.Python.asyncMode_) {
+    Blockly.Python.imports_['asyncio'] = 'import asyncio';
+
+    Blockly.Python.asyncTaskCount_++;
+    var taskName = '_ob_task' + Blockly.Python.asyncTaskCount_;
+
+    var taskCode = 'async def ' + taskName + '():\n';
+    if (!nextBlock) {
+      taskCode += Blockly.Python.INDENT + 'pass\n';
+    } else {
+      var variablesName = [];
+      for (var x in Blockly.Python.variables_) {
+        variablesName.push(
+          Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+      }
+      if (variablesName.length !== 0) {
+        taskCode += Blockly.Python.INDENT + "global " + variablesName.join(', ') + "\n";
+      }
+      taskCode = Blockly.Python.scrub_(block, taskCode);
+    }
+
+    Blockly.Python.libraries_['async_' + taskName] = taskCode;
+    Blockly.Python.asyncTasks_.push(taskName);
+    return null;
+  }
+
+  var code = "";
   if (!nextBlock) {
     code += "pass\n";
   }

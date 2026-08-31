@@ -1,0 +1,31 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables><variable type="" id="varMsg">msg</variable></variables>
+  <block type="event_whenmicropythonbegin" id="begin1" x="10" y="10">
+    <next>
+      <block type="control_forever" id="fv1">
+        <statement name="SUBSTACK">
+          <block type="control_wait" id="w1">
+            <value name="DURATION"><shadow type="math_positive_number"><field name="NUM">1</field></shadow></value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block type="espEspNow_whenMessage" id="hat1" x="10" y="220">
+    <next>
+      <block type="data_setvariableto" id="set1">
+        <field name="VARIABLE" id="varMsg">msg</field>
+        <value name="VALUE">
+          <block type="espEspNow_message" id="m1"></block>
+        </value>
+        <next>
+          <block type="espEspNow_broadcast" id="bc1">
+            <value name="MSG">
+              <block type="espEspNow_message" id="m2"></block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

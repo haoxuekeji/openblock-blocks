@@ -76,6 +76,78 @@ if (typeof ScratchBlocks.Python['math_n100to100_number'] !== 'function') {
     process.exit(1);
 }
 
+// Device blocks (extendedOpcode deviceType_category_opcode) are defined
+// dynamically by the VM at runtime. Register a minimal equivalent so
+// fixtures using the MicroPython pin event hat can load headlessly.
+ScratchBlocks.Blocks.microPython_pin_whenPinLevel = {
+    init: function () {
+        this.jsonInit({
+            message0: 'when pin %1 becomes %2',
+            args0: [
+                {
+                    type: 'field_dropdown',
+                    name: 'PIN',
+                    options: [['IO4', '4'], ['IO5', '5']]
+                },
+                {
+                    type: 'field_dropdown',
+                    name: 'LEVEL',
+                    options: [['high', '1'], ['low', '0']]
+                }
+            ],
+            nextStatement: null
+        });
+    }
+};
+
+// --- Optional device extensions (external-resources-v3) --------------------
+// s10/s11 exercise the *real* extension generators to lock the cross-cutting
+// contract that a device extension registers its blocks + generators against
+// the shared Blockly instance (and, for event hats, opts into asyncio mode
+// via Blockly.Python.MICROPYTHON_EVENT_HATS). The extensions live in a sibling
+// repo, so each is a soft dependency: when one is absent we warn and drop its
+// fixture rather than failing the suite (a hand-written inline stub would not
+// actually test the real generator).
+const extensionsDir = path.join(repoRoot, '..', 'external-resources-v3', 'extensions');
+const optionalExtensions = [
+    {id: 'espEspNow', probe: 'espEspNow_whenMessage', fixture: 's10_espnow_async.xml'},
+    {id: 'espBme280', probe: 'espBme280_temperature', fixture: 's11_bme280_read.xml'}
+];
+// Extension modules are CommonJS-ish (`exports = registerFn`). Run each in a
+// sandbox that returns the assigned export, then register it against the same
+// headless Blockly instance the generators use.
+const loadExtModule = (extDir, file) => {
+    const src = fs.readFileSync(path.join(extDir, file), 'utf8');
+    return new Function('exports', 'Blockly', `${src}\nreturn exports;`)(undefined, ScratchBlocks);
+};
+// Device.getPinOptions resolves the active board's pin list from the live
+// flyout, which does not exist headlessly. Make it return null so extension
+// blocks with device pin dropdowns fall back to their built-in defaults.
+if (ScratchBlocks.Device && typeof ScratchBlocks.Device.getPinOptions === 'function') {
+    ScratchBlocks.Device.getPinOptions = () => null;
+}
+const skippedFixtures = new Set();
+for (const ext of optionalExtensions) {
+    const extDir = path.join(extensionsDir, ext.id);
+    let available = false;
+    if (fs.existsSync(path.join(extDir, 'generator.js')) &&
+        fs.existsSync(path.join(extDir, 'blocks.js'))) {
+        try {
+            loadExtModule(extDir, 'blocks.js')(ScratchBlocks);
+            loadExtModule(extDir, 'generator.js')(ScratchBlocks);
+            available = typeof ScratchBlocks.Python[ext.probe] === 'function';
+        } catch (err) {
+            process.stdout.write(
+                `WARN ${ext.id} extension failed to load, skipping ${ext.fixture}: ${err.message}\n`);
+        }
+    }
+    if (!available) {
+        process.stdout.write(
+            `WARN ${ext.id} extension not found (external-resources-v3), skipping ${ext.fixture}.\n`);
+        skippedFixtures.add(ext.fixture);
+    }
+}
+
 // --- Helpers ---------------------------------------------------------------
 
 const generate = xmlText => {
@@ -145,6 +217,81 @@ const extraAssertions = {
             check(fixture, `nested repeat uses loop variable "${loopVar}"`,
                 result.code.includes(`for ${loopVar} in range(`));
         }
+    },
+    s8_async_two_stacks: (fixture, result) => {
+        check(fixture, 'both begin stacks become asyncio tasks',
+            result.code.includes('async def _ob_task1():') &&
+            result.code.includes('async def _ob_task2():'),
+            result.code);
+        check(fixture, 'tasks started under one gather entry point',
+            result.code.includes('await asyncio.gather(_ob_task1(), _ob_task2())') &&
+            result.code.includes('asyncio.run(_ob_main())'),
+            result.code);
+        check(fixture, 'wait block awaits instead of blocking',
+            result.code.includes('await asyncio.sleep(1)'),
+            result.code);
+        check(fixture, 'wait_until polls cooperatively',
+            /while not [^\n]+:\n\s+await asyncio\.sleep_ms\(10\)/.test(result.code),
+            result.code);
+        check(fixture, 'forever loop yields to sibling tasks',
+            result.code.includes('await asyncio.sleep_ms(0)'),
+            result.code);
+        check(fixture, 'tasks declare shared variables global',
+            /async def _ob_task1\(\):\n\s+global score/.test(result.code),
+            result.code);
+    },
+    s9_pin_event_hat: (fixture, result) => {
+        check(fixture, 'pin hat generates handler and watcher tasks',
+            result.code.includes('async def _ob_on_pin4_2():') &&
+            result.code.includes('async def _ob_watch2():'),
+            result.code);
+        check(fixture, 'watcher fires the handler on the rising edge',
+            result.code.includes('if _ob_now == 1 and _ob_last != 1:') &&
+            result.code.includes('await _ob_on_pin4_2()'),
+            result.code);
+        check(fixture, 'rising edge watch defaults the pin to pull-down',
+            result.code.includes('p4.init(Pin.IN, Pin.PULL_DOWN)'),
+            result.code);
+        check(fixture, 'begin task and watcher both gathered',
+            result.code.includes('await asyncio.gather(_ob_task1(), _ob_watch2())'),
+            result.code);
+    },
+    s10_espnow_async: (fixture, result) => {
+        // Loaded from the real extension, so this locks the contract that an
+        // external device generator can opt a hat into async multi-task mode.
+        check(fixture, 'extension registered its hat in MICROPYTHON_EVENT_HATS',
+            ScratchBlocks.Python.MICROPYTHON_EVENT_HATS.indexOf('espEspNow_whenMessage') !== -1);
+        check(fixture, 'message hat becomes an async handler + watcher',
+            result.code.includes('async def _ob_on_espnow():') &&
+            result.code.includes('async def _ob_espnow_watch():'),
+            result.code);
+        check(fixture, 'watcher polls espnow and awaits the handler',
+            result.code.includes('if _ob_now.poll():') &&
+            result.code.includes('await _ob_on_espnow()'),
+            result.code);
+        check(fixture, 'begin task and espnow watcher both gathered',
+            result.code.includes('await asyncio.gather(_ob_task1(), _ob_espnow_watch())') &&
+            result.code.includes('asyncio.run(_ob_main())'),
+            result.code);
+        check(fixture, 'espnow runtime imported and initialised once',
+            result.code.includes('import obespnow') &&
+            result.code.includes('_ob_now = obespnow.OBEspNow()'),
+            result.code);
+    },
+    s11_bme280_read: (fixture, result) => {
+        // Sync path (single begin stack): the real sensor extension imports
+        // its driver and builds one shared SoftI2C bus, and every reporter
+        // reads from that instance.
+        check(fixture, 'bme280 init imports driver and builds SoftI2C bus once',
+            result.code.includes('import bme280') &&
+            result.code.includes('_bme = bme280.BME280(SoftI2C(sda=Pin(21), scl=Pin(22)))'),
+            result.code);
+        check(fixture, 'all four sensor reporters read from the _bme instance',
+            result.code.includes('_bme.temperature()') &&
+            result.code.includes('_bme.humidity()') &&
+            result.code.includes('_bme.pressure()') &&
+            result.code.includes('_bme.altitude()'),
+            result.code);
     }
 };
 
@@ -152,6 +299,8 @@ const extraAssertions = {
 
 const fixtures = fs.readdirSync(fixturesDir)
     .filter(f => f.endsWith('.xml'))
+    // Fixtures for absent optional extensions were flagged above.
+    .filter(f => !skippedFixtures.has(f))
     .sort();
 
 if (fixtures.length === 0) {
