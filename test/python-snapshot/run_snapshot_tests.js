@@ -99,6 +99,18 @@ ScratchBlocks.Blocks.microPython_pin_whenPinLevel = {
         });
     }
 };
+ScratchBlocks.Blocks.microPython_sensor_sensorUltrasonicDistance = {
+    init: function () {
+        this.jsonInit({
+            message0: 'ultrasonic distance trig %1 echo %2',
+            args0: [
+                {type: 'field_dropdown', name: 'TRIG', options: [['IO5', '5'], ['IO4', '4']]},
+                {type: 'field_dropdown', name: 'ECHO', options: [['IO18', '18'], ['IO19', '19']]}
+            ],
+            output: 'Number'
+        });
+    }
+};
 
 // --- Optional device extensions (external-resources-v3) --------------------
 // s10/s11 exercise the *real* extension generators to lock the cross-cutting
@@ -113,7 +125,9 @@ const optionalExtensions = [
     {id: 'espEspNow', probe: 'espEspNow_whenMessage', fixture: 's10_espnow_async.xml'},
     {id: 'espBme280', probe: 'espBme280_temperature', fixture: 's11_bme280_read.xml'},
     {id: 'espEvents', probe: 'espEvents_whenButton', fixture: 's12_events_hats.xml'},
-    {id: 'espWebRemote', probe: 'espWebRemote_whenButton', fixture: 's13_webremote.xml'}
+    {id: 'espWebRemote', probe: 'espWebRemote_whenButton', fixture: 's13_webremote.xml'},
+    {id: 'espOled', probe: 'espOled_init', fixture: 's15_oled_shared_across_tasks.xml'},
+    {id: 'espBuzzer', probe: 'espBuzzer_playNote', fixture: 's16_buzzer_async.xml'}
 ];
 // Extension modules are CommonJS-ish (`exports = registerFn`). Run each in a
 // sandbox that returns the assigned export, then register it against the same
@@ -348,6 +362,45 @@ const extraAssertions = {
         check(fixture, 'begin task, button watcher and poll task all gathered',
             result.code.includes('await asyncio.gather(_ob_task1(), _ob_webbtnwatch2(), _ob_repeat_task())') &&
             result.code.includes('asyncio.run(_ob_main())'),
+            result.code);
+    },
+    s14_ultrasonic_distance: (fixture, result) => {
+        // No echo pulse at all (-2: sensor missing / miswired) must stay
+        // distinguishable from "nothing in range" (-1), and an unplugged
+        // ECHO line must not float.
+        check(fixture, 'echo pin pulled down',
+            result.code.includes('ep = Pin(echo, Pin.IN, Pin.PULL_DOWN)'),
+            result.code);
+        check(fixture, 'missing sensor reports -1, out of range reports 400',
+            /if d == -2:\n\s+return -1\n\s+if d < 0:\n\s+return 400\n\s+return min\(400, round\(d \/ 58\.0, 1\)\)/.test(result.code),
+            result.code);
+        check(fixture, 'reporter calls the shared helper',
+            result.code.includes('dist = _ob_sr04(5, 18)'),
+            result.code);
+    },
+    s15_oled_shared_across_tasks: (fixture, result) => {
+        // The screen is initialised in one asyncio task and drawn on from a
+        // pin event handler: the init must bind the module-level name.
+        check(fixture, 'oled init declares the display global inside its task',
+            /async def _ob_task1\(\):\n\s+global _oled_i2c, _oled\n\s+_oled_i2c = SoftI2C/.test(result.code),
+            result.code);
+        check(fixture, 'event handler draws on the shared display',
+            /async def _ob_on_pin4_2\(\):\n(\s+.*\n)*?\s+_oled\.text\(/.test(result.code),
+            result.code);
+    },
+    s16_buzzer_async: (fixture, result) => {
+        // A note inside an asyncio task must await instead of blocking the
+        // other task for its whole duration.
+        check(fixture, 'note in a task awaits the async tone helper',
+            result.code.includes('await _ob_buzzer_tone_async(4, 262, 1)') &&
+            result.code.includes('async def _ob_buzzer_tone_async(pin, freq, dur):') &&
+            result.code.includes('await asyncio.sleep(dur)'),
+            result.code);
+        check(fixture, 'rest in a task awaits asyncio.sleep',
+            result.code.includes('await asyncio.sleep(0.5)'),
+            result.code);
+        check(fixture, 'no blocking tone call left inside the tasks',
+            !/async def _ob_task\d\(\):\n(\s+.*\n)*?\s+_ob_buzzer_tone\(/.test(result.code),
             result.code);
     }
 };

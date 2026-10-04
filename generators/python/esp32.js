@@ -343,17 +343,28 @@ Blockly.Python['microPython_sensor_sensorUltrasonicDistance'] = function(block) 
   var trig = block.getFieldValue('TRIG') || '5';
   var echo = block.getFieldValue('ECHO') || '18';
 
+  // Same helper as the realtime mode (openblock-vm microPythonEsp32 SR04_FUNC).
+  // time_pulse_us returns -2 when the echo pulse never starts (sensor missing,
+  // miswired or unpowered) and -1 when it outlasts the timeout (nothing in
+  // range): report -1 and the 400 cm rated range respectively, so an obstacle
+  // avoidance "distance < N" stops when the sensor is gone instead of
+  // treating open space as an obstacle. The pull-down keeps a disconnected
+  // ECHO line from floating into random readings.
   Blockly.Python.customFunctions_['sr04'] =
     'def _ob_sr04(trig, echo):\n' +
     '    tp = Pin(trig, Pin.OUT)\n' +
-    '    ep = Pin(echo, Pin.IN)\n' +
+    '    ep = Pin(echo, Pin.IN, Pin.PULL_DOWN)\n' +
     '    tp.value(0)\n' +
     '    time.sleep_us(2)\n' +
     '    tp.value(1)\n' +
     '    time.sleep_us(10)\n' +
     '    tp.value(0)\n' +
     '    d = machine.time_pulse_us(ep, 1, 30000)\n' +
-    '    return round(d / 58.0, 1) if d > 0 else 0\n';
+    '    if d == -2:\n' +
+    '        return -1\n' +
+    '    if d < 0:\n' +
+    '        return 400\n' +
+    '    return min(400, round(d / 58.0, 1))\n';
 
   var code = '_ob_sr04(' + trig + ', ' + echo + ')';
   return [code, Blockly.Python.ORDER_ATOMIC];

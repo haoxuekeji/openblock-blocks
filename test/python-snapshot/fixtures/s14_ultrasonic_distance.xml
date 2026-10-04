@@ -1,0 +1,25 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="varDist">dist</variable>
+  </variables>
+  <block type="event_whenmicropythonbegin" id="hat14" x="10" y="10">
+    <next>
+      <block type="control_forever" id="s14a1">
+        <statement name="SUBSTACK">
+          <block type="data_setvariableto" id="s14a2">
+            <field name="VARIABLE" id="varDist">dist</field>
+            <value name="VALUE">
+              <shadow type="text">
+                <field name="TEXT">0</field>
+              </shadow>
+              <block type="microPython_sensor_sensorUltrasonicDistance" id="s14a3">
+                <field name="TRIG">5</field>
+                <field name="ECHO">18</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
