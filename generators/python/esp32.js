@@ -59,7 +59,7 @@ Blockly.Python['microPython_pin_whenPinLevel'] = function(block) {
     var variablesName = [];
     for (var x in Blockly.Python.variables_) {
       variablesName.push(
-        Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+          Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
     }
     if (variablesName.length !== 0) {
       handlerCode += ind + 'global ' + variablesName.join(', ') + '\n';

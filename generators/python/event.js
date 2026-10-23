@@ -54,7 +54,7 @@ Blockly.Python['event_whenmicropythonbegin'] = function(block) {
       var variablesName = [];
       for (var x in Blockly.Python.variables_) {
         variablesName.push(
-          Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+            Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
       }
       if (variablesName.length !== 0) {
         taskCode += Blockly.Python.INDENT + "global " + variablesName.join(', ') + "\n";
